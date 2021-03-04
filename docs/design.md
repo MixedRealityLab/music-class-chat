@@ -114,6 +114,8 @@ to be saved (or if signed up by the organisation).
 - `url` (string)
 - `hidden` (bool) - don't show in/add to content tab
 
+?? other content types, e.g. multi-track or switchable audio.
+
 ## UserChat
 
 One User's actual conversation in one Chat.
@@ -133,6 +135,8 @@ One User's actual conversation in one Chat.
 - `message` (string) - message to user (optional)
 - `content` (object) - `Content` (optional)
 - `rewards` (array of string) - IDs of rewards given (optional)
+- `date` (Date) - date/time added
+- ?? new or seen
 
 Note, elements present are displayed in the above order,
 userinput then message then content then rewards.
@@ -156,14 +160,15 @@ Definition of a Chat, Group-specific.
 `MessageDef` (within ChatDef):
 - `label` (string) - optional jump label
 
-- MessageDef trigger conditions:
+MessageDef trigger conditions:
 - `ifall` (array of string) - rewards required to enable (and)
 - `andnot` (array of string) - rewards that disable (and)
 - `after` (number) - optional, second to wait before enabling
 - `waitfor` (string) - user input to wait for (prompt)
 - `ornext` (bool) - also check the next MessageDef
+- ?? wait for teacher
 
-- MessageDef actions:
+MessageDef actions:
 - `message` (string) - message to user
 - `content` (object) - `Content`
 - `rewards` (array of string) - IDs of rewards to give
