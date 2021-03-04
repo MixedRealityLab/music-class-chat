@@ -61,7 +61,7 @@ Group IDs will be prefixed with the Site ID, e.g. "S1/G1".
   unique within server, URLable
 - `name` (string) - display name/title
 - `description` (string) - short description
-- `public` (bool) - show on public Site
+- `showpublic` (bool) - show on public Site
 - `guest` (bool) - allow (stateless) keyless guest access
 - `password` (string) - group joining password
 - `site` (object) - Site de-norm
@@ -85,18 +85,21 @@ user code generated for each User if/when they are for their progress
 to be saved (or if signed up by the organisation).
 
 `User` properties:
-- `_id` (ObjectId) - PK, arbitrary, site-wide unique
-- `usercode` (string) - user access code (URL component)
+- `_id` (string) - PK, site/group/usercode
+- ?? `pin` (string) - for security
 - `groupid` (string) - user's site/group (FK)
+- `group` (object) - group de-norm (filtered), name, guest, site
 - `rewards` (array) - array of UserReward - probably only those the user has
   or that have an icon for not having
 - `chats` (array) - array of `UserChat`, de-norm cache of top-level chat info
-- `content` (array) - array of `Content`, user's personal content list
+- `content` (array) - array of `UserContent`, user's personal content list
+- `created` (Date)
+- `lastmodified` (Date)
 - ?? other access information, e.g. last login
 - ?? user external ID (e.g. initials) visible to admin users
 
 `UserReward`:
-- `_id` (string) - requard id, short name
+- `_id` (string) - reward id, short name
 - `got` (bool)
 - `icon` (string) - denorm from Reward, reward icon filename
   (default scope is site icons)
@@ -116,14 +119,17 @@ to be saved (or if signed up by the organisation).
 
 ?? other content types, e.g. multi-track or switchable audio.
 
+`UserContent` extends `Content` with:
+- `_id` (string) - unique, for detail view identification
+
 ## UserChat
 
 One User's actual conversation in one Chat.
 
-`UserChat`:
-- `_id` (ObjectId) - PK, arbitrary, unique
+`UserChat`, collection "UserChat":
+- `_id` (string) - PK, site/group/usercode/chat
 - `chatdef` (object) - de-norm (partial?) ChatDef
-- `visible` (bool) - in master list
+- ?? `visible` (bool) - in master list
 - `enabled` (bool) - disabled => locked
 - `unread` (bool) - new content
 - `waiting` (bool) - waiting for response
@@ -145,8 +151,8 @@ userinput then message then content then rewards.
 
 Definition of a Chat, Group-specific.
 
-`ChatDef`:
-- `_id` (ObjectId?) - PK
+`ChatDef`, may be static:
+- `_id` (string) - PK, site/group/chat
 - `groupid` (string) - FK Group, i.e. site/group
 - `ifall` (array of string) - rewards required to enable (and)
 - `andnot` (array of string) - rewards that disable (and)
