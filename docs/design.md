@@ -32,7 +32,24 @@ Assuming MongoDB for now.
 
 See [example config spreadsheet](../data/example-config.xlsx)
 
-## Site
+## Security and accounts
+
+Admin
+- whitelisted emails, per site or group
+- request admin session - enter email, get temporary link
+- maybe require email again and a password
+- send all admin email on significant changes
+
+users
+- identified by allocated ID/code in link
+- group option to require 'initials'
+- group option to require an email (not stored) to sent link to
+- group option to allow self-enrolment
+- group option to require PIN?
+
+## Data model
+
+### Site
 
 Note, this could be static config.
 
@@ -40,12 +57,17 @@ Note, this could be static config.
 - `_id` (string) - site identifier, hopefully URL-able (shortname)
 - `name` (string) - site title
 - `description` (string) - short description of site
+- `admins` (array of string) - emails of site admins
 - ??`favicon` - site favicon (encoded? url?)
 - ?? site-specific template and CSS stuff (colours, images, etc.)
 
-TODO: site access controls
+`Admin` properties:
+- `email` (string)
+- `password` (string) - suitably hashed
+- `sessionkey` (string) - if current session active
+- `sessionexpires` (Date) - when session expires
 
-## Group
+### Group
 
 Within a single site there may be one or more `Group`s.
 Each group has its own independent set of users, activities and content.
@@ -62,11 +84,15 @@ Group IDs will be prefixed with the Site ID, e.g. "S1/G1".
 - `name` (string) - display name/title
 - `description` (string) - short description
 - `showpublic` (bool) - show on public Site
-- `guest` (bool) - allow (stateless) keyless guest access
+- `allowguest` (bool) - allow (stateless) keyless guest access
 - `password` (string) - group joining password
+- `requireinitials` (bool) - require user initials
+- `requireemail` (string) - require email (not stored) to send usercode to
+- `allowselfenrol` (bool) - allow self-enrolment
 - `site` (object) - Site de-norm
 - `rewards` (array) - array of `Reward`s - rewards available
 - ?? something about user content organisation
+- ?? group-specific admin
 
 `Reward` properties:
 - `_id` (string) - requard id, short name
@@ -74,9 +100,7 @@ Group IDs will be prefixed with the Site ID, e.g. "S1/G1".
 - `noicon` (string) - optional icon filename when you *don't* have it
 - `comment` (string) - for admin/author
 
-TODO: group access controls
-
-## User
+### User
 
 A `User` is an end-user of a group, i.e. a student/class-member. 
 Each user belongs to a specific `Group`.
@@ -86,6 +110,7 @@ to be saved (or if signed up by the organisation).
 
 `User` properties:
 - `_id` (string) - PK, site/group/usercode
+- `initials` (string) - if required
 - ?? `pin` (string) - for security
 - `groupid` (string) - user's site/group (FK)
 - `group` (object) - group de-norm (filtered), name, guest, site
@@ -95,8 +120,6 @@ to be saved (or if signed up by the organisation).
 - `content` (array) - array of `UserContent`, user's personal content list
 - `created` (Date)
 - `lastmodified` (Date)
-- ?? other access information, e.g. last login
-- ?? user external ID (e.g. initials) visible to admin users
 
 `UserReward`:
 - `_id` (string) - reward id, short name
@@ -106,7 +129,7 @@ to be saved (or if signed up by the organisation).
 - `noicon` (string) - denorm from Reward, optional icon filename 
   when you *don't* have it
 
-## Content
+### Content
 
 `Content`:
 - `title` (string)
@@ -122,7 +145,7 @@ to be saved (or if signed up by the organisation).
 `UserContent` extends `Content` with:
 - `_id` (string) - unique, for detail view identification
 
-## UserChat
+### UserChat
 
 One User's actual conversation in one Chat.
 
@@ -147,7 +170,7 @@ One User's actual conversation in one Chat.
 Note, elements present are displayed in the above order,
 userinput then message then content then rewards.
 
-## ChatDef and MessageDef
+### ChatDef and MessageDef
 
 Definition of a Chat, Group-specific.
 
