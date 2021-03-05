@@ -14,6 +14,7 @@ User signup:
 User path(s):
 - `/user/sid:/g/gid:/u/uid:/`, GET(any), return User
 - `/user/sid:/g/gid:/u/uid:/c/cid:/` - GET(any), return UserChat
+- `/user/sid:/g/gid:/c/cid:/` - GET(any), return ChatDef
 - `/user/sid:/g/gid:/u/uid:/c/cid:/` - PUT(PATCH), JSON object w unread
 - `/user/sid:/g/gid:/u/uid:/c/cid:/messages/` - POST(any), JSON object 
   w usermessage, reset, (UserChat) nextix, waiting, contentid - 

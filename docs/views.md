@@ -21,6 +21,16 @@ User path(s):
 - `/sid:/g/gid:/u/uid:/c/cid:/` - specific chat
 - `/sid:/g/gid:/u/uid:/c/cid:/mix:` - zoom in on specific UserMessage (index)
 
+components:
+- AppBar
+- TabBar
+- ChatsList, inc. items
+- RewardList, inc. rewards
+- ResourceList, inc. resource
+- Settings
+- MessageList, inc. messages
+- ContentDetail
+
 ## Admin
 
 - `/sid:/admin` - admin session request form - enter email
@@ -32,4 +42,8 @@ User path(s):
 - `/sid:/admin/sessionid:/g/gid:/adduser` - add a user
 - `/sid:/admin/sessionid:/g/gid:/addmessage` - post a new message
 - `/sid:/admin/sessionid:/endsession` - end session (early)
+
+components:
+- AdminBar
+- AdminMenu
 
