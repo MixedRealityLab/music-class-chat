@@ -25,5 +25,7 @@ db.Groups.insertOne({
 });
 ```
 
-try http://localhost:3000/test/g/test1/
+try
+- test group home: http://localhost:3000/test/g/test1/
+- update group form: http://localhost:3000/test/admin/aaa/g/test1/update
 

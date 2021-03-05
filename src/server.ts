@@ -1,5 +1,6 @@
 import * as sapper from '@sapper/server';
 import express from "express";
+import fileupload from 'express-fileupload'
 import * as http from "http";
 import logger from "morgan";
 import {MongoClient} from "mongodb";
@@ -22,6 +23,11 @@ app.use(express.static('static'));
 app.use(logger('dev'));
 app.use(cors());
 app.use(express.json());
+app.use(fileupload({
+  limits: { fileSize: 2 * 1024 * 1024 },
+  //useTempFiles : true,
+  //tempFileDir : '/tmp/'
+}));
 app.use(session({
 	secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'notverysecret',
 	resave: false,

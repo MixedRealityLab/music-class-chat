@@ -13,12 +13,8 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
     const dbgroup = await req.app.locals.db.collection('Groups').findOne(
 	{ _id: `${sid}/${gid}` }
     ) as t.DBGroup;
-    console.log(`get group ${sid}/${gid}`, dbgroup);
+    //console.log(`get group ${sid}/${gid}`, dbgroup);
     if (!dbgroup) {
-      await req.app.locals.db.collection('Groups').insertOne({
-	      _id: `${sid}/${gid}`, name: "internal", 
-	      description: "debug", admins: []
-      })
       res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
       return;
     }
