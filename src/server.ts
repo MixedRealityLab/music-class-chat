@@ -7,6 +7,7 @@ import cors from "cors";
 import session from 'express-session';
 import SessionFileStore from 'session-file-store';
 import type * as t from './_types';
+import type { ServerRequest } from './_servertypes';
 
 const {PORT} = process.env;
 const app = express();
@@ -30,7 +31,7 @@ app.use(session({
 	store: new FileStore(fileStoreOptions),
 }));
 app.use(sapper.middleware({
-	session: (req:sapper.SapperRequest, res:sapper.SapperResponse) => ({
+	session: (req:ServerRequest, res:sapper.SapperResponse) => ({
 		//userid: req.session.userid,
 	})
 }));

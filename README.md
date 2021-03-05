@@ -8,9 +8,10 @@ Copyright (c) The University of Nottingham, 2021.
 Author: chris.greenhalgh@nottingham.ac.uk
 
 
-Status: just starting
+Status: just starting, see [todo](docs/todo.md)
 
-See [docs](docs/)
+See [docs](docs/), including [design](docs/design.md),
+[api](docs/api.md) and [views](docs/views.md).
 
 ## Build/run
 
@@ -28,4 +29,6 @@ sudo docker-compose up server
 ```
 
 Open [http://localhosts:3000/](http://localhosts:3000/)
+
+See [test.md](test.md)
 
