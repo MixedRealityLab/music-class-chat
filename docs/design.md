@@ -49,6 +49,8 @@ users
 
 ## Data model
 
+NB see typescript [_types.ts](../src/_types.ts)
+
 ### Site
 
 Colletion 'Sites'. Note, this could be static config.

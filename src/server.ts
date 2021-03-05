@@ -6,6 +6,7 @@ import {MongoClient} from "mongodb";
 import cors from "cors";
 import session from 'express-session';
 import SessionFileStore from 'session-file-store';
+import type * as t from './_types';
 
 const {PORT} = process.env;
 const app = express();
@@ -39,7 +40,7 @@ const attemptConnection = function () {
 	MongoClient.connect('mongodb://mongo:27017', {useUnifiedTopology: true})
 		.then((client) => {
 			console.log("Connected to DB");
-			app.locals.db = client.db('music-class');
+			app.locals.db = client.db('music-class-chat');
 
 			const server = http.createServer(app);
 			server.listen(PORT);
