@@ -23,7 +23,8 @@
 		"nanoid": "^3.1.20",
 		"node-fetch": "^2.6.1",
 		"session-file-store": "^1.5.0",
-		"simplify-js": "^1.2.4"
+		"simplify-js": "^1.2.4",
+		"xlsx": "^0.16.9"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.13",

@@ -12,6 +12,7 @@ interface AppLocals {
 // for express-fileupload
 interface UploadedFile extends File {
   mimetype: string;
+  data?:Buffer;
 }
 
 interface MyFiles {

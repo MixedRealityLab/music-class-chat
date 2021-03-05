@@ -139,7 +139,7 @@ export interface ChatDefSummary {
   andnot?: string[];
   sortorder: number;
   name: string;
-  decription: string;
+  description: string;
   icon: string;
 }
 
