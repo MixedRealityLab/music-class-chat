@@ -31,16 +31,21 @@ export interface DBAdmin extends AAdmin {
 }
 
 // Group, User view
-interface UGroupBase {
+interface UGroupSummaryBase {
   _id: string;
   name: string;
   description: string;
+}
+interface UGroupBase extends UGroupSummaryBase {
   showpublic: boolean;
   requireinitials: boolean;
   requirepin: boolean;
   requireemail: boolean;
   allowselfenrol: boolean;
   allowguest: boolean;
+}
+export interface UGroupSummary extends UGroupSummaryBase {
+  site: USite;
 }
 export interface UGroup extends UGroupBase {
   site: USite;
@@ -72,7 +77,7 @@ export interface Reward {
 export interface UUser {
   _id: string; // site/group/usercode
   groupid: string;
-  group: UGroup;
+  group: UGroupSummary;
   rewards: UserReward[];
   chats: UserChatSummary[];
   content: Content[];
@@ -164,7 +169,7 @@ export interface UserChatSummary {
   enabled: boolean;
   unread: boolean;
   waiting: boolean;
-  nextid: number;
+  nextix: number;
 }
 
 // full UserChat

@@ -4,6 +4,15 @@
 - [x] add group; by hand
 - [x] user group view
 - [x] group update - form, api, process, update
+- [x] new user create/join
+- [ ] user home
+- [ ] user chat list
+- [ ] user chat view
+- [ ] user message eval
+- [ ] user input
+- [ ] user rewards
+- [ ] user content
+- [ ] user pin?
 - ...
 - [ ] admin session generate
 - [ ] admin session login

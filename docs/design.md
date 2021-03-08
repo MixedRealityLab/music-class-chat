@@ -176,7 +176,7 @@ One User's actual conversation in one Chat.
 Collection 'UserChats'.
 
 `UserChat`, has:
-- `_id` (string) - PK, site/group/usercode/chat
+- `_id` (string) - PK, site/group/chat/usercode
 - `chatdef` (object) - de-norm `ChatDef`, excluding messages
 - `enabled` (bool) - disabled => locked
 - `unread` (bool) - new content
