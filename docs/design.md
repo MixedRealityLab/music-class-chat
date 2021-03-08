@@ -134,6 +134,7 @@ Collections 'Users'.
 
 `User` properties:
 - `_id` (string) - PK, site/group/usercode
+- `usercode` (string) - random ID
 - `initials` (string) - if required (`Group.requireinitials`)
 - ?? `pin` (string) - for security (`Group.requirepin`)
 - `groupid` (string) - user's site '/' group (FK)

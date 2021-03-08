@@ -5,7 +5,7 @@
 - [x] user group view
 - [x] group update - form, api, process, update
 - [x] new user create/join
-- [ ] user home
+- [x] user home
 - [ ] user chat list
 - [ ] user chat view
 - [ ] user message eval

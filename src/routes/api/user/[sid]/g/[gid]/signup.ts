@@ -36,7 +36,7 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
     const user: t.DBUser = await createNewUser(dbgroup, signup, req.app.locals.db);
     console.log('new user', user);
     const response:t.SignupResponse = {
-	    userid: user._id
+	    usercode: user.usercode,
     };
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(response));
@@ -48,11 +48,12 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
 
 async function createNewUser(group: t.DBGroup, signup: t.SignupRequest, 
 			     db: Db) : Promise<t.DBUser> {
-  const _id:string = crypto.randomBytes(12).toString('hex');
+  const uid:string = crypto.randomBytes(12).toString('hex');
   //console.log(`new user id: ${_id}`);
   const now = new Date().toISOString();
   let user:t.DBUser = {
-    _id: _id,
+    _id: `${group._id}/${uid}`,
+    usercode: uid,
     groupid: group._id,
     group: {
       _id: group._id,
@@ -76,7 +77,7 @@ async function createNewUser(group: t.DBGroup, signup: t.SignupRequest,
   let ucs: t.UserChat[] = [];
   for (let cd of cds) {
     const uc:t.UserChat = {
-      _id: `${cd._id}/${user._id}`,
+      _id: `${cd._id}/${user.usercode}`,
       chatdef: {
         _id: cd._id,
 	groupid: cd.groupid,

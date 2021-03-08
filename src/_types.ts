@@ -76,6 +76,7 @@ export interface Reward {
 // User, user view
 export interface UUser {
   _id: string; // site/group/usercode
+  usercode: string;
   groupid: string;
   group: UGroupSummary;
   rewards: UserReward[];
@@ -193,7 +194,7 @@ export interface SignupRequest {
 }
 export interface SignupResponse {
   error?: string;
-  userid?: string;
+  usercode?: string;
 }
 
 // User patch chat (unread)

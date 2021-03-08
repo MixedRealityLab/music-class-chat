@@ -4,11 +4,12 @@
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid } = page.params;
     const res = await this.fetch(`/api/user/${sid}/g/${gid}`);
+    if (res.status !== 200) {
+      return { error: `http response ${res.status}` };
+    } 
     const data = await res.json() as t.GenericResponse;
     if (data.error) {
       return { error: data.error };
-    } else if (res.status !== 200) {
-      return { error: `http response ${res.status}` };
     } else {
       return { group: data as t.UGroup };
     }

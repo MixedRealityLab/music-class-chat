@@ -51,12 +51,12 @@
     try {
       const parsed = await response.json() as t.SignupResponse;
       console.log('signup response', parsed);
-      if (parsed.userid) {
+      if (parsed.usercode) {
         // OK
         $session.group = group;
         $session.userid = parsed.userid;
         $session.pin = pin;
-        goto(`/${sid}/g/${gid}/u/${parsed.userid}/`);
+        goto(`/${sid}/g/${gid}/u/${parsed.usercode}/`);
       } else {
         error = parsed.error;
       }
