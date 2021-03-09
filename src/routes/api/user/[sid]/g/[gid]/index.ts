@@ -19,6 +19,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       return;
     }
     const ugroup: t.UGroup = {
+      id: dbgroup.id,
       _id: dbgroup._id, 
       name: dbgroup.name,
       description: dbgroup.description,

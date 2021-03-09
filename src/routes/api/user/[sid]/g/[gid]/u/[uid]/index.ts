@@ -13,7 +13,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
     const dbuser = await req.app.locals.db.collection('Users').findOne(
 	{ _id: `${sid}/${gid}/${uid}` }
     ) as t.DBUser;
-    console.log(`get user ${sid}/${gid}/${uid}`, dbuser);
+    //console.log(`get user ${sid}/${gid}/${uid}`, dbuser);
     if (!dbuser) {
       res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
       return;

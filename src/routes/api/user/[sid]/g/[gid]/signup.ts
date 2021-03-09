@@ -1,6 +1,7 @@
 import type { SapperResponse } from '@sapper/server';
 import type * as t from '../../../../../../_types';
-import type { ServerRequest } from '../../../../../../_servertypes'
+import type { ServerRequest } from '../../../../../../_servertypes';
+import {isEnabled} from '../../../../../../_logic';
 import * as crypto from 'crypto';
 import type {Db} from 'mongodb';
 
@@ -34,7 +35,7 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
       return;
     }
     const user: t.DBUser = await createNewUser(dbgroup, signup, req.app.locals.db);
-    console.log('new user', user);
+    console.log(`new user ${user._id}`);
     const response:t.SignupResponse = {
 	    usercode: user.usercode,
     };
@@ -56,6 +57,7 @@ async function createNewUser(group: t.DBGroup, signup: t.SignupRequest,
     usercode: uid,
     groupid: group._id,
     group: {
+      id: group.id,
       _id: group._id,
       name: group.name,
       description: group.description,
@@ -79,6 +81,7 @@ async function createNewUser(group: t.DBGroup, signup: t.SignupRequest,
     const uc:t.UserChat = {
       _id: `${cd._id}/${user.usercode}`,
       chatdef: {
+        id: cd.id,
         _id: cd._id,
 	groupid: cd.groupid,
 	ifall: cd.ifall,
@@ -88,7 +91,7 @@ async function createNewUser(group: t.DBGroup, signup: t.SignupRequest,
 	description: cd.description,
 	icon: cd.icon,
       },
-      enabled: true, // TODO
+      enabled: isEnabled(user.rewards, cd.ifall, cd.andnot),
       unread: false,
       waiting: false,
       messages: [],

@@ -32,6 +32,7 @@ export interface DBAdmin extends AAdmin {
 
 // Group, User view
 interface UGroupSummaryBase {
+  id: string;
   _id: string;
   name: string;
   description: string;
@@ -139,6 +140,7 @@ export interface MessageDef {
 
 // ChatDef minus messages
 export interface ChatDefSummary {
+  id: string;
   _id: string;
   groupid: string;
   ifall?: string[];
@@ -159,7 +161,7 @@ export interface UserMessage {
   userinput?: string;
   message?: string;
   content?: Content;
-  rewards?: string[];
+  rewardicons?: string[];
   date: string; // Date
 }
 
@@ -205,6 +207,7 @@ export interface UserChatPatchRequest {
 // add user message
 export interface AddUserMessageRequest {
   message:UserMessage;
+  rewards?:string[];
   reset?:string[];
   nextix:number;
   waiting:boolean;
@@ -231,6 +234,7 @@ export interface SendMessageRequest {
   // message core
   message?: string;
   content?: Content;
+  rewardicons?: string[];
   rewards?: string[];
   reset?: string[];
   // metadata

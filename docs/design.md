@@ -101,8 +101,8 @@ Group IDs will be prefixed with the Site ID, e.g. "S1/G1".
 Collection 'Groups'.
 
 `Group` properties:
-- `_id` (string) - site ID '/' group/class identifier (shortname)
-  unique within server, URLable
+- `id` (string) group/class identifier (shortname), URLable
+- `_id` (string) - site ID '/' group id
 - `name` (string) - display name/title
 - `description` (string) - short description
 - `showpublic` (bool) - show on public site group list
@@ -190,7 +190,7 @@ Collection 'UserChats'.
 - `userinput` (string) - user's input (optional)
 - `message` (string) - message to user (optional)
 - `content` (object) - `Content` (optional)
-- `rewards` (array of string) - IDs of rewards given (optional)
+- `rewardicons` (array of string) - URLs of rewards given (optional)
 - `date` (Date) - date/time added
 - ?? new or seen
 
@@ -204,6 +204,7 @@ Definition of a Chat, Group-specific.
 Collection `ChatDefs`.
 
 `ChatDef`, has:
+- `id` (string) - chat ID, URLable, unique within group
 - `_id` (string) - PK, site/group/chat
 - `groupid` (string) - FK Group, i.e. site/group
 - `ifall` (array of string) - rewards required to enable (and)

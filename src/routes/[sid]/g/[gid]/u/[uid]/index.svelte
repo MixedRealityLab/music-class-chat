@@ -34,12 +34,19 @@
 
   <div class="grid grid-cols-1 gap-2">
   {#each user.chats as uc}
-    
-    <div class="mt-1 block w-full">
+    {#if uc.enabled}
+    <a href="/{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/">
+    <div class="mt-1 block w-full bg-gray-300 py-2">
       <h2>{uc.chatdef.name}</h2>
       <p>{uc.chatdef.description}</p>
     </div>
-
+    </a>
+    {:else}
+    <div class="mt-1 block w-full bg-gray-50 py-2 text-gray-400">
+      <h2>{uc.chatdef.name}</h2>
+      <p>{uc.chatdef.description}</p>
+    </div>
+    {/if}
   {/each}
   </div>
 

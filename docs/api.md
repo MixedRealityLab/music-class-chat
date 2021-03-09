@@ -12,7 +12,6 @@ User signup:
 User path(s):
 - `/user/sid:/g/gid:/u/uid:/`, GET(any), return UUser
 - `/user/sid:/g/gid:/u/uid:/c/cid:/` - GET(any), return UserChat
-- `/user/sid:/g/gid:/c/cid:/` - GET(any), return ChatDef
 - `/user/sid:/g/gid:/u/uid:/c/cid:/` - PUT(PATCH), UserChatPatchRequest, 
   return {error?}
 - `/user/sid:/g/gid:/u/uid:/c/cid:/addmessage` - POST(any), AddUserMessageRequest

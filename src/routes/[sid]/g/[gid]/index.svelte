@@ -28,7 +28,7 @@
   <p>Group {group.name}: {group.description}</p>
   {#if group.allowselfenrol}
     <p><a class="text-xl m-1 p-1 bg-gray-100 border-solid rounded inline-block"
-          href="/{group._id.split('/')[0]}/g/{group._id.split('/')[1]}/signup">Sign up</a></p>
+          href="/{group.site._id}/g/{group.id}/signup">Sign up</a></p>
   {:else}
     <p>You cannot sign up yourself; please ask whoever invited you to sign up for you</p>
   {/if}

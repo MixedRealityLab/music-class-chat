@@ -141,6 +141,7 @@ function readGroup(wb:xlsx.WorkBook, sid:string, gid:string, site:t.DBSite) : t.
   if (!includesAll(SUMMARY_HEADINGS, summary.headings))
     throw `Summary sheet is missing heading(s); found ${summary.headings}`;
   let group:t.DBGroup = {
+    id: gid,
     _id: `${sid}/${gid}`,
     name: summary.rows[0][NAME],
     description: summary.rows[0][DESCRIPTION],
@@ -185,6 +186,7 @@ function splitRewards(value:string, group:t.DBGroup) : string[] {
     if (!group.rewards.find(rw => rw._id ==r))
       throw `Found unknown reward ${r}`;
   }
+  return rs;
 }
 
 function readChatDefs(wb:xlsx.WorkBook, group:t.DBGroup): t.ChatDef[] {
@@ -197,6 +199,7 @@ function readChatDefs(wb:xlsx.WorkBook, group:t.DBGroup): t.ChatDef[] {
     throw `Chats sheet is missing heading(s); found ${chats.headings}`;
   for (let r of chats.rows) {
     cds.push({
+      id: r[_ID],
       _id: `${group._id}/${r[_ID]}`,
       groupid: group._id,
       ifall: splitRewards(r[IFALL], group),
