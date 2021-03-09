@@ -6,15 +6,26 @@
 - [x] group update - form, api, process, update
 - [x] new user create/join
 - [x] user home
-- [ ] user chat list
-- [ ] user chat view
-- [ ] user message eval
-- [ ] user input
-- [ ] user rewards
-- [ ] user content
-- [ ] user pin?
-- ...
+- [x] user chat list
+- [x] user chat view
+- [x] user message eval
+- [x] user input
+- [x] user rewards
+- [x] user content
+- [ ] flags on chats, e.g. new message/waiting (may need lookahead)
+- [ ] content zoom (resources and chat views)
+- [ ] chat view auto-scrolling (bottom/new messages) / fixed nav bar
+- [ ] user pin? (requires sessions)
+- [ ] google classrom integration??
+- [ ] fancy rewards background/placement? (TBD)
+- [ ] assets and styling (from designer)
+- [ ] site-specific css / styling
+- [ ] site public list page
 - [ ] admin session generate
 - [ ] admin session login
-- [ ] admin session checks
+- [ ] admin session checks (including group update)
+- [ ] admin group view
+- [ ] admin new group
+- [ ] admin user view
+- [ ] admin add user(s)
 
