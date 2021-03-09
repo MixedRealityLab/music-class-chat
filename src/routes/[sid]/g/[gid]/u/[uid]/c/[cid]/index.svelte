@@ -30,6 +30,7 @@
   import { stores } from '@sapper/app';
   import { onDestroy, onMount } from 'svelte';
   import { getNextStep, isEnabled } from '../../../../../../../../_logic';
+  import { ContentType } from '../../../../../../../../_types';
 
   export let error: string;
   export let user: t.UUser;
@@ -129,6 +130,11 @@
       for (let uc of user.chats) {
         uc.enabled = isEnabled(user.rewards, uc.allof, uc.andnot);
       }
+      // content
+      if (nextstep.do.content && !nextstep.do.content.hidden) {
+        user.content.push(nextstep.do.content);
+        user.content.sort((a,b) => (a.sortorder ? a.sortorder : 0)-(b.sortorder ? b.sortorder : 0));
+      }
       // update server
       // TODO: waiting ?
       updateServer(umsg, nextstep.do.rewards, nextstep.do.reset, userchat.nextix, false);
@@ -197,32 +203,51 @@
   {#each messages as um}
 
     {#if um.date && (um.userinput || um.message || um.content || (um.rewards && um.rewards.length>0))}
-      <p>{um.date}</p>
+      <p class="text-center text-sm">{um.date}</p>
     {/if}
 
     {#if um.userinput}
-      <div class="mt-1 block w-full bg-gray-300 py-2">
-        <p>{um.userinput}</p>
+      <div class="mt-1 block w-full bg-gray-100 p-2">
+        <p class="text-right">{um.userinput}</p>
       </div>
     {/if}
 
     {#if um.message}
-      <div class="mt-1 block w-full py-2">
+      <div class="mt-1 block w-full bg-gray-300 p-2">
         <p>{um.message}</p>
       </div>
     {/if}
 
     {#if um.content}
-      <a href="um.content.url">
-      <div class="mt-1 block w-full bg-gray-300 py-2">
-        <p>({um.content.type} {um.content.title})</p>
+      <div class="mt-1 block w-full bg-gray-300 p-2">
+        {#if um.content.type == ContentType.image}
+          <img src="{um.content.url}" alt="{um.content.title}">
+        {:else if um.content.type == ContentType.youtube}
+          <iframe title="{um.content.title}" 
+           src="{um.content.url.indexOf('/embed/')<0 ? 'https://youtube.com/embed/'+um.content.url.substring(um.content.url.lastIndexOf('/')) : um.content.url}"
+           frameborder="0" allow="encrypted-media; picture-in-picture" 
+           allowfullscreen></iframe>
+        {:else if um.content.type == ContentType.mp3}
+          <audio controls>
+            <source src="{um.content.url}" type="audio/mp3">
+          </audio>
+        {:else if um.content.type == ContentType.document || um.content.type == ContentType.website}
+          <p>Open:</p>
+          <a href="{um.content.url}" class="cursor-pointer" target="_blank">
+           <div class="bg-gray-100 p-2">
+            <p class="text-lg">{um.content.title}</p>
+            <p class="">{um.content.description}</p>
+           </div>
+          </a>
+        {:else}
+          <p>Unknown content ({um.content.type}): {um.content.title})</p>
+        {/if}
       </div>
-      </a>
     {/if}
 
     {#if um.rewardicons}
     {#each um.rewardicons as icon}
-      <div class="mt-1 block w-full bg-gray-300 py-2">
+      <div class="mt-1 block w-full bg-gray-300 p-2">
         <p><img src="{icon}" alt="{icon}"> ({icon})</p>
       </div>
     {/each}
@@ -232,11 +257,13 @@
   </div>
 
   {#if waitfor && waitfor.length>0 }
-     <div class="grid grid-cols-1 gap-2">
-       <p>Waiting for you to say...</p>
+     <div class="mt-3 grid grid-cols-1 gap-2 bg-gray-800 p-2">
+       <p class="text-white">Waiting for you to say...</p>
        {#each waitfor as userinput}
-         <button class="w-full text-xl m-1 p-1 bg-gray-100 border-solid rounded block"
-                 on:click={handleUserInput(userinput)}>{userinput}</button>
+         <div class="mt-1 block w-full bg-gray-100 p-2" 
+                 on:click={handleUserInput(userinput)}>
+          <p class="text-right">{userinput}</p>
+         </div>
        {/each}
      </div>
   {/if}

@@ -204,7 +204,7 @@ function readChatDefs(wb:xlsx.WorkBook, group:t.DBGroup): t.ChatDef[] {
       groupid: group._id,
       ifall: splitRewards(r[IFALL], group),
       andnot: splitRewards(r[ANDNOT], group),
-      sortorder: Number(r[SORTORDER]),
+      sortorder: r[SORTORDER] ? Number(r[SORTORDER]) : 0,
       name: r[NAME],
       description: r[DESCRIPTION],
       icon: r[ICON],
@@ -253,7 +253,7 @@ function readMessageDefs(wb:xlsx.WorkBook, id:string, group:t.DBGroup): t.Messag
 	title: r[TITLE],
 	description: r[DESCRIPTION],
 	section: r[SECTION],
-	sortorder: r[SORTORDER] ? 0 : Number(r[SORTORDER]),
+	sortorder: r[SORTORDER] ? Number(r[SORTORDER]) : 0,
 	type: getContentType(r[TYPE]),
         url: r[URL],
 	hidden: asBoolean(r[HIDDEN]),
@@ -262,6 +262,7 @@ function readMessageDefs(wb:xlsx.WorkBook, id:string, group:t.DBGroup): t.Messag
       reset: splitRewards(r[RESET], group),
       jumpto: r[JUMPTO],
     });
+    console.log(`sortorder = ${r[SORTORDER]}`);
   }
   return mds;
 }

@@ -53,9 +53,15 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
     for (let uc of ucs) {
       uc.enabled = isEnabled(rewards, uc.chatdef.ifall, uc.chatdef.andnot);
     }
+    let content = dbuser.content;
+    if (addreq.message.content && !addreq.message.content.hidden) {
+        content = [...dbuser.content, addreq.message.content];
+	content.sort((a,b) => (a.sortorder ? a.sortorder : 0)-(b.sortorder ? b.sortorder : 0));
+      }
+
     await req.app.locals.db.collection('Users').updateOne(
             { _id: `${sid}/${gid}/${uid}` },
-            { $set: { rewards: rewards, chats: ucs }});
+            { $set: { rewards: rewards, chats: ucs, content: content }});
 
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({}));

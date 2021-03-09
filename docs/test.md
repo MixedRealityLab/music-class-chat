@@ -28,7 +28,8 @@ db.Groups.insertOne({
 try
 - test group home: http://localhost:3000/test/g/test1/
 - update group form: http://localhost:3000/test/admin/aaa/g/test1/update - use example config spreadsheet
-- user start form: http://localhost:3000/test/g/test1/signup (password: '1234') - note the userid, e.g. '4ec3d54fc23e17ff232a731a'
+- user start form: http://localhost:3000/test/g/test1/signup (password: '1234') - note the userid, e.g. '4ec3d54fc23e17ff232a731a' if you want to return
+
 
 
 
