@@ -28,7 +28,7 @@
 
 
 <AppBar title="{user ? user.group.name : 'Error'}"/>
-<UserTabs url="/{sid}/g/{gid}/u/{uid}" page="chats"/>
+<UserTabs url="/{sid}/g/{gid}/u/{uid}" page="settings"/>
 <div class="px-2 pt-2">
 
 
@@ -36,23 +36,8 @@
   <p>ERROR: {error}</p>
 {:else}
 
-  <div class="grid grid-cols-1 gap-2">
-  {#each user.chats as uc}
-    {#if uc.enabled}
-    <a href="/{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/">
-    <div class="mt-1 block w-full bg-gray-300 p-2">
-      <h2>{uc.chatdef.name}</h2>
-      <p>{uc.chatdef.description ? uc.chatdef.description : ''}</p>
-    </div>
-    </a>
-    {:else}
-    <div class="mt-1 block w-full bg-gray-50 p-2 text-gray-400">
-      <h2>{uc.chatdef.name}</h2>
-      <p>{uc.chatdef.description}</p>
-    </div>
-    {/if}
-  {/each}
-  </div>
+<p class="text-lg pt-2">Group: {user.group.name}</p>
+<p>{user.group.description}</p>
 
 {/if}
 

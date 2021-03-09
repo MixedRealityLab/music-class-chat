@@ -262,7 +262,7 @@ function readMessageDefs(wb:xlsx.WorkBook, id:string, group:t.DBGroup): t.Messag
       reset: splitRewards(r[RESET], group),
       jumpto: r[JUMPTO],
     });
-    console.log(`sortorder = ${r[SORTORDER]}`);
+    //console.log(`sortorder = ${r[SORTORDER]}`);
   }
   return mds;
 }

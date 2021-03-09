@@ -17,6 +17,7 @@
 </script>
 <script lang="ts">
   import AppBar from '../../../../../../components/AppBar.svelte';
+  import Content from '../../../../../../components/Content.svelte';
   import UserTabs from '../../../../../../components/UserTabs.svelte';
   import { stores } from '@sapper/app';
 
@@ -28,8 +29,8 @@
 
 
 <AppBar title="{user ? user.group.name : 'Error'}"/>
-<UserTabs url="/{sid}/g/{gid}/u/{uid}" page="chats"/>
-<div class="px-2 pt-2">
+<UserTabs url="/{sid}/g/{gid}/u/{uid}" page="resources"/>
+<div class="px-2">
 
 
 {#if error}
@@ -37,20 +38,11 @@
 {:else}
 
   <div class="grid grid-cols-1 gap-2">
-  {#each user.chats as uc}
-    {#if uc.enabled}
-    <a href="/{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/">
-    <div class="mt-1 block w-full bg-gray-300 p-2">
-      <h2>{uc.chatdef.name}</h2>
-      <p>{uc.chatdef.description ? uc.chatdef.description : ''}</p>
-    </div>
-    </a>
-    {:else}
-    <div class="mt-1 block w-full bg-gray-50 p-2 text-gray-400">
-      <h2>{uc.chatdef.name}</h2>
-      <p>{uc.chatdef.description}</p>
-    </div>
+  {#each user.content as content, ix}
+    {#if content.section && (ix==0 || user.content[ix-1].section != content.section) } 
+    <div class="pt-2 text-lg">{content.section}</div>
     {/if}
+    <Content content="{content}"/>
   {/each}
   </div>
 
