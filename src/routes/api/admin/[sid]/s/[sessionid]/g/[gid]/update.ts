@@ -35,6 +35,24 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
       return;
     }
     console.log(`using admin session for ${session.admin}`);  
+    const dbsite = await req.app.locals.db.collection('Sites').findOne(
+        { _id: sid }) as t.DBSite;
+    if (!dbsite) {
+      res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
+      return;
+    }
+    const admin = dbsite.admins.find((a) => a.email == session.admin);
+    if (!admin) {
+      console.log(`admin ${session.admin} not found on site ${sid}`);
+      res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
+      return;
+    }
+    if (!admin.enabled) {
+      console.log(`admin ${session.admin} disabled on site ${sid}`);
+      res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
+      return;
+    }
+
     const dbgroup = await req.app.locals.db.collection('Groups').findOne(
 	{ _id: `${sid}/${gid}` }
     ) as t.DBGroup;
