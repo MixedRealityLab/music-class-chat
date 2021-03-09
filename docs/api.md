@@ -31,6 +31,7 @@ Admin paths:
 - [x] `/admin/sid:/s/sessionid:/g/gid:/update` POST (form) - including 
   'spreadsheet' -> AGroup
 - [ ] `/admin/sid:/s/sessionid:/g/gid:/sendmessage` POST - SendMessageRequest
+- [ ] `/admin/sid:/s/sessionid:/upload`, POST (form) - files (images, etc.)
 - [ ] `/admin/sid:/endsession` POST - end current admin session
 
 

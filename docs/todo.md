@@ -28,4 +28,7 @@
 - [ ] admin new group
 - [ ] admin user view
 - [ ] admin add user(s)
+- [ ] admin file upload support
+- [ ] mongo database security
+- [ ] server db configuration
 

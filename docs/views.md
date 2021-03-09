@@ -37,6 +37,7 @@ components:
 - [x] `/sid:/admin/sessionid:/g/gid:/update` - edit/update a group
 - [ ] `/sid:/admin/sessionid:/g/gid:/adduser` - add a user
 - [ ] `/sid:/admin/sessionid:/g/gid:/addmessage` - post a new message
+- [ ] `/sid:/admin/sessionid:/upload` - (site) file upload
 - [ ] `/sid:/admin/sessionid:/endsession` - end session (early)
 
 components:
