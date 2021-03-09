@@ -12,6 +12,7 @@
      frameborder="0" allow="encrypted-media; picture-in-picture" 
      allowfullscreen></iframe>
   {:else if content.type == ContentType.mp3}
+    <!-- svelte-ignore a11y-media-has-caption -->
     <audio controls>
       <source src="{content.url}" type="audio/mp3">
     </audio>

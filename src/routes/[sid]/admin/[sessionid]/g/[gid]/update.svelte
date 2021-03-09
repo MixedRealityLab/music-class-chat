@@ -3,6 +3,7 @@
   const { page } = stores();
   const { sid, gid, sessionid } = $page.params;
   let files;
+  let password;
   let statusCode = "";
   let working = false;
  
@@ -11,6 +12,7 @@
       working = true;
       const formData = new FormData();
       formData.append("spreadsheet", files[0]);
+      formData.append("password", password); // TODO hash
       const response = await fetch(`/api/admin/${sid}/s/${sessionid}/g/${gid}/update`, {
         method: "POST",
         body: formData
@@ -28,6 +30,10 @@
 
 <form on:submit|preventDefault={handleSubmit}>
   <div class="grid grid-cols-1 gap-2">
+    <label class="block">
+      <span>Password</span>
+      <input class="mt-1 block w-full" required id="password" type="password" bind:value="{password}" />
+    </label>
     <label class="block">
       <span>Spreadsheet (file):</span>
       <input class="mt-1 block w-full" required id="file" type="file" bind:files />

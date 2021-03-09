@@ -30,6 +30,13 @@ export interface DBAdmin extends AAdmin {
   password: string;
 }
 
+export interface AdminSession {
+  admin: string;
+  password: string;
+  sessionkey: string;
+  sessionexpires: string; // ISO date
+}
+
 // Group, User view
 interface UGroupSummaryBase {
   id: string;

@@ -7,12 +7,34 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
   try {
     const { sid, sessionid, gid } = req.params;
     const file = req.files.spreadsheet;
+    const password = req.body.password;
     if (!sid || !gid || !file) {
       res.writeHead(400).end(JSON.stringify({error:'Bad Request'}));
       return;
     }
-    // TODO sessionid security
-
+    // temporary security with explicit password check 
+    const session = await req.app.locals.db.collection('AdminSessions')
+      .findOne({ sessionkey: sessionid });
+    if (!session) {
+      console.log(`no admin session found: ${sessionid}`);
+      res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
+      return;
+    }
+    const now = new Date();
+    const expires = new Date(session.sessionexpires);
+    if (expires.getTime() < now.getTime()) {
+      console.log(`admin session ${sessionid} expires (${expires} vs ${now})`);
+      await req.app.locals.db.collection('AdminSessions')
+        .remove({ sessionkey: sessionid });
+      res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
+      return;
+    }
+    if (session.password !== password) { // TODO hash
+      console.log(`admin session password mismatch`);
+      res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
+      return;
+    }
+    console.log(`using admin session for ${session.admin}`);  
     const dbgroup = await req.app.locals.db.collection('Groups').findOne(
 	{ _id: `${sid}/${gid}` }
     ) as t.DBGroup;

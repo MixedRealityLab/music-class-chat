@@ -23,11 +23,15 @@ db.Groups.insertOne({
   admins:[{ email: "chris.greenhalgh@nottingham.ac.uk", password: "",
   enabled: true }]}
 });
+db.AdminSessions.insertOne({
+  admin: "chris.greenhalgh@nottingham.ac.uk", password: "secret",
+  sessionkey: "secret12345678", sessionexpires: "2021-12-31T23:59:59.999Z"
+});
 ```
 
 try
 - test group home: http://localhost:3000/test/g/test1/
-- update group form: http://localhost:3000/test/admin/aaa/g/test1/update - use example config spreadsheet
+- update group form: http://localhost:3000/test/admin/secret12345678/g/test1/update - use example config spreadsheet
 - user start form: http://localhost:3000/test/g/test1/signup (password: '1234') - note the userid, e.g. '4ec3d54fc23e17ff232a731a' if you want to return
 
 
