@@ -3,7 +3,7 @@
   import type * as t from '../../../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid, uid, cid } = page.params;
-    const ures = await this.fetch(`/api/user/${sid}/g/${gid}/u/${uid}`);
+    const ures = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);
     if (ures.status !== 200) {
       return { error: `Sorry, there was a problem (${ures.status})` };
     }
@@ -12,7 +12,7 @@
       return { error: udata.error };
     }
     let user = udata as t.UUser;
-    const ucres = await this.fetch(`/api/user/${sid}/g/${gid}/u/${uid}/c/${cid}`);
+    const ucres = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}/c/${cid}`);
     if (ucres.status !== 200) {
       return { error: `Sorry, there was a problem (${ucres.status})` };
     }
@@ -39,7 +39,7 @@
 
   const { page } = stores();
   const { sid, gid, uid, cid } = $page.params;
-  let backurl = `/${sid}/g/${gid}/u/${uid}/`;
+  let backurl = `${sid}/g/${gid}/u/${uid}/`;
   let reftime = new Date();
   let waitfor: string [] = null;
   let timer = null;
@@ -169,7 +169,7 @@
       nextix,
       waiting,
     }
-    const res = await fetch(`/api/user/${sid}/g/${gid}/u/${uid}/c/${cid}/addmessage`, {
+    const res = await fetch(`api/user/${sid}/g/${gid}/u/${uid}/c/${cid}/addmessage`, {
       method: "POST",
       body: JSON.stringify(req),
       headers: { 'Content-Type': 'application/json' },

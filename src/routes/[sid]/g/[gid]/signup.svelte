@@ -3,7 +3,7 @@
   import type * as t from '../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid } = page.params;
-    const res = await this.fetch(`/api/user/${sid}/g/${gid}`);
+    const res = await this.fetch(`api/user/${sid}/g/${gid}`);
     const data = await res.json() as t.GenericResponse;
     if (data.error) {
       return { error: data.error };
@@ -36,7 +36,7 @@
       pin: pin,
       anon: false,
     };
-    const response = await fetch(`/api/user/${sid}/g/${gid}/signup`, {
+    const response = await fetch(`api/user/${sid}/g/${gid}/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@
         $session.group = group;
         $session.userid = parsed.userid;
         $session.pin = pin;
-        goto(`/${sid}/g/${gid}/u/${parsed.usercode}/`);
+        goto(`${sid}/g/${gid}/u/${parsed.usercode}/`);
       } else {
         error = parsed.error;
       }

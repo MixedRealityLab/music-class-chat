@@ -3,7 +3,7 @@
   import type * as t from '../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid, uid } = page.params;
-    const res = await this.fetch(`/api/user/${sid}/g/${gid}/u/${uid}`);
+    const res = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);
     if (res.status !== 200) {
       return { error: `Sorry, there was a problem (${res.status})` };
     }
@@ -28,7 +28,7 @@
 
 
 <AppBar title="{user ? user.group.name : 'Error'}"/>
-<UserTabs url="/{sid}/g/{gid}/u/{uid}" page="settings"/>
+<UserTabs url="{sid}/g/{gid}/u/{uid}" page="settings"/>
 <div class="px-2 pt-2">
 
 

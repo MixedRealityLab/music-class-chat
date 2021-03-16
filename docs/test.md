@@ -14,6 +14,7 @@ db.Sites.insertOne({
   enabled: true }]
 });
 db.Groups.insertOne({
+  id: "test1",
   _id: "test/test1", name: "Test Group 1", description: "hand made test 1",
   showpublic: true, requireinitials: true, requirepin: false, 
   requireemail: false, allowselfenrol: true, password: "please", 

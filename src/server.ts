@@ -10,7 +10,7 @@ import SessionFileStore from 'session-file-store';
 import type * as t from './_types';
 import type { ServerRequest } from './_servertypes';
 
-const {PORT} = process.env;
+const {PORT,MONGODB,BASEPATH} = process.env;
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -19,7 +19,8 @@ app.set('views', __dirname + '/templates');
 let FileStore = (SessionFileStore)(session);
 let fileStoreOptions = {};
 
-app.use(express.static('static'));
+console.log(`base path: ${BASEPATH}`);
+app.use(BASEPATH,express.static('static'));
 app.use(logger('dev'));
 app.use(cors());
 app.use(express.json());
@@ -36,7 +37,7 @@ app.use(session({
 	/* mainly for dev (restartable) */
 	store: new FileStore(fileStoreOptions),
 }));
-app.use(sapper.middleware({
+app.use(BASEPATH, sapper.middleware({
 	session: (req:ServerRequest, res:sapper.SapperResponse) => ({
 		//userid: req.session.userid,
 	})
@@ -44,7 +45,7 @@ app.use(sapper.middleware({
 
 let delay = 1000;
 const attemptConnection = function () {
-	MongoClient.connect('mongodb://mongo:27017', {useUnifiedTopology: true})
+	MongoClient.connect(MONGODB ? MONGODB : 'mongodb://mongo:27017', {useUnifiedTopology: true})
 		.then((client) => {
 			console.log("Connected to DB");
 			app.locals.db = client.db('music-class-chat');

@@ -32,3 +32,33 @@ Open [http://localhosts:3000/](http://localhosts:3000/)
 
 See [test.md](test.md)
 
+### standalone dev
+
+e.g. (mrl music)
+```
+sudo docker build --network=internal -f dev.Dockerfile \
+  -t music-class-chat:dev .
+sudo docker run --rm --name=music-class-chat -p 3000:3000 -p 10000:10000 \
+  --volume=`pwd`/src:/app/src:consistent \
+  --volume=`pwd`/static:/app/static/:ro \
+  -e BASEPATH=/3/music-class-chat --network=internal \
+  -e MONGODB=mongodb://music-class-chat-server:...@mongodb/admin \
+  music-class-chat:dev
+```
+
+## Production
+
+build:
+```
+sudo docker build --network XXX --build-arg BASEPATH=... -t music-class-chat .
+```
+
+run:
+```
+sudo docker run --rm --network=internal \
+  -e MONGODB=mongodb://music-class-chat-server:`cat mongo.password`@mongodb/admin \
+  -e BASEPATH=... \
+  music-class-chat
+
+```
+

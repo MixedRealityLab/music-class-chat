@@ -13,7 +13,8 @@
       const formData = new FormData();
       formData.append("spreadsheet", files[0]);
       formData.append("password", password); // TODO hash
-      const response = await fetch(`/api/admin/${sid}/s/${sessionid}/g/${gid}/update`, {
+      console.log(`document.baseURI = ${document.baseURI}`);
+      const response = await fetch(`api/admin/${sid}/s/${sessionid}/g/${gid}/update`, {
         method: "POST",
         body: formData
       });

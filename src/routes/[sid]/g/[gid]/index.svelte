@@ -3,7 +3,8 @@
   import type * as t from '../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid } = page.params;
-    const res = await this.fetch(`/api/user/${sid}/g/${gid}`);
+    //console.log(`page`,page);
+    const res = await this.fetch(`api/user/${sid}/g/${gid}`);
     if (res.status !== 200) {
       return { error: `http response ${res.status}` };
     } 
@@ -28,7 +29,7 @@
   <p>Group {group.name}: {group.description}</p>
   {#if group.allowselfenrol}
     <p><a class="text-xl m-1 p-1 bg-gray-100 border-solid rounded inline-block"
-          href="/{group.site._id}/g/{group.id}/signup">Sign up</a></p>
+          href="{group.site._id}/g/{group.id}/signup">Sign up</a></p>
   {:else}
     <p>You cannot sign up yourself; please ask whoever invited you to sign up for you</p>
   {/if}

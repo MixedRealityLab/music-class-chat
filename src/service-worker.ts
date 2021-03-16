@@ -11,7 +11,8 @@ self.addEventListener('install', (event: ExtendableEvent) => {
 	event.waitUntil(
 		caches
 			.open(ASSETS)
-			.then(cache => cache.addAll(to_cache))
+			// broken with baseurl?
+			//.then(cache => cache.addAll(to_cache))
 			.then(() => {
 				((self as any) as ServiceWorkerGlobalScope).skipWaiting();
 			})
