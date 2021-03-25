@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { Preload } from "@sapper/common";
-  import type * as t from '../../../../../../_types';
+  import type * as t from '../../../../../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid, uid, cid } = page.params;
     const ures = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);
@@ -19,7 +19,7 @@
     const ucdata = await ucres.json() as t.GenericResponse;
     if (ucdata.error) {
       return { error: ucdata.error };
-    } 
+    }
     let userchat = ucdata as t.UUser;
 
     return { user, userchat };
@@ -156,10 +156,10 @@
     // update server
     // TODO waiting ?
     updateServer(umsg, [], [], userchat.nextix, false);
-    
+
     timer = setTimeout(checkMessages, 250);
   }
-  
+
   // async? or just hope...
   async function updateServer(umsg: t.UserMessage, rewards: string[], reset: string[], nextix: number, waiting: boolean) {
     const req: t.AddUserMessageRequest = {
@@ -182,39 +182,66 @@
     if (data.error) {
       console.log(`error updating server: udata.error`);
     }
-    else { 
+    else {
       console.log(`updated server`);
     }
   }
 
 </script>
 
+<style>
+  .speech-left {
+    @apply relative mt-2 block w-full bg-gray-300 px-4 py-2 rounded-tr-2xl
+  }
+
+  .speech-left:before {
+    content: "";
+    @apply w-0 h-0 absolute top-0;
+    border-right: 8px solid rgb(209,213,219);
+    border-left: 8px solid transparent;
+    border-top: 12px solid rgb(209,213,219);
+    border-bottom: 12px solid transparent;
+    left: -12px;
+  }
+
+  .speech-right {
+    @apply relative mt-2 block w-full bg-gray-100 px-4 py-2 rounded-t-2xl rounded-bl-2xl
+  }
+
+  .speech-right:after {
+    content: "";
+    @apply w-0 h-0 absolute bottom-0;
+    border-left: 8px solid rgb(243,244,246);
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid rgb(243,244,246);
+    border-top: 12px solid transparent;
+    right: -12px;
+  }
+</style>
 
 <AppBar title="{userchat ? userchat.chatdef.name : 'Error'}"
         backpage="{backurl}"/>
 <div class="px-2">
 
-
 {#if error}
   <p>ERROR: {error}</p>
 {:else}
 
-
-  <div class="grid grid-cols-1 gap-2">
+  <div class="p-4 grid grid-cols-1">
   {#each messages as um}
 
     {#if um.date && (um.userinput || um.message || um.content || (um.rewards && um.rewards.length>0))}
-      <p class="text-center text-sm">{um.date}</p>
+      <p class="pt-4 text-center text-xs">{new Date(um.date).toLocaleString('en-GB', {dateStyle: 'long', timeStyle: 'short'})}</p>
     {/if}
 
     {#if um.userinput}
-      <div class="mt-1 block w-full bg-gray-100 p-2">
+      <div class="speech-right">
         <p class="text-right">{um.userinput}</p>
       </div>
     {/if}
 
     {#if um.message}
-      <div class="mt-1 block w-full bg-gray-300 p-2">
+      <div class="speech-left" class:rounded-b-2xl={!um.content}>
         <p>{um.message}</p>
       </div>
     {/if}
@@ -225,7 +252,7 @@
 
     {#if um.rewardicons}
     {#each um.rewardicons as icon}
-      <div class="mt-1 block w-full bg-gray-300 p-2">
+      <div class="mt-2 block w-full bg-gray-300 px-4 py-2 rounded-b-2xl rounded-tr-2xl">
         <p><img src="{icon}" alt="{icon}"></p>
       </div>
     {/each}
@@ -238,7 +265,7 @@
      <div class="mt-3 grid grid-cols-1 gap-2 bg-gray-800 p-2">
        <p class="text-white">Waiting for you to say...</p>
        {#each waitfor as userinput}
-         <div class="mt-1 block w-full bg-gray-100 p-2" 
+         <div class="mt-1 block w-full bg-gray-100 p-2"
                  on:click={handleUserInput(userinput)}>
           <p class="text-right">{userinput}</p>
          </div>

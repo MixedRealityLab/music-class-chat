@@ -24,4 +24,6 @@ export interface ServerRequest extends sapper.SapperRequest {
   app: App;
   files: MyFiles;
   body?: any;
+  protocol: string
+  host: string
 }

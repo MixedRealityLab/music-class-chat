@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { Preload } from "@sapper/common";
-  import type * as t from '../../../../_types';
+  import type * as t from '../../../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid, uid } = page.params;
     const res = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);

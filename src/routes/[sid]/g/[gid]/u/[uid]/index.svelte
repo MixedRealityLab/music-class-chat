@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { Preload } from "@sapper/common";
-  import type * as t from '../../../../_types';
+  import type * as t from '../../../../../../_types';
   export const preload:Preload = async function(this, page, session) {
     const { sid, gid, uid } = page.params;
     const res = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);
@@ -40,7 +40,7 @@
   {#each user.chats as uc}
     {#if uc.enabled}
     <a href="{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/">
-    <div class="mt-1 block w-full bg-gray-300 p-2">
+    <div class="mt-1 block w-full bg-gray-300 py-3 px-6">
       <h2>{uc.chatdef.name}</h2>
       <p>{uc.chatdef.description ? uc.chatdef.description : ''}</p>
     </div>

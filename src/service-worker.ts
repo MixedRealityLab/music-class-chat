@@ -1,4 +1,4 @@
-import {timestamp, files, shell, routes} from '@sapper/service-worker';
+import {files, shell, timestamp} from '@sapper/service-worker';
 
 const ASSETS = `cache${timestamp}`;
 
@@ -12,7 +12,7 @@ self.addEventListener('install', (event: ExtendableEvent) => {
 		caches
 			.open(ASSETS)
 			// broken with baseurl?
-			//.then(cache => cache.addAll(to_cache))
+			.then(cache => cache.addAll(to_cache))
 			.then(() => {
 				((self as any) as ServiceWorkerGlobalScope).skipWaiting();
 			})

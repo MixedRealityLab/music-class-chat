@@ -3,6 +3,7 @@ import * as t from '../../../../../../../../_types';
 import type { ServerRequest } from '../../../../../../../../_servertypes'
 import * as xlsx from 'xlsx';
 
+
 export async function post(req: ServerRequest, res: SapperResponse, next: () => void) {
   try {
     const { sid, sessionid, gid } = req.params;
@@ -25,7 +26,7 @@ export async function post(req: ServerRequest, res: SapperResponse, next: () => 
     if (expires.getTime() < now.getTime()) {
       console.log(`admin session ${sessionid} expires (${expires} vs ${now})`);
       await req.app.locals.db.collection('AdminSessions')
-        .remove({ sessionkey: sessionid });
+        .deleteOne({ sessionkey: sessionid });
       res.writeHead(401).end(JSON.stringify({error:'Unauthorized'}));
       return;
     }

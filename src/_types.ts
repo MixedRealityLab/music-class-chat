@@ -27,7 +27,8 @@ export interface AAdmin {
 }
 
 export interface DBAdmin extends AAdmin {
-  password: string;
+  password: string
+  salt: string
 }
 
 export interface AdminSession {
