@@ -26,13 +26,14 @@ app.use(BASEPATH, fileupload({
 app.use(BASEPATH, session({
 	secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'notverysecret',
 	resave: false,
-	saveUninitialized: true,
+	saveUninitialized: false,
 	/* cookie: { secure: true }, */
 	/* mainly for dev (restartable) */
 	store: new FileStore(fileStoreOptions),
 }))
 app.use(BASEPATH, sapper.middleware({
 	session: (req: ServerRequest, res: sapper.SapperResponse) => ({
+		sessionid: req.session.sessionid
 		//userid: req.session.userid,
 	})
 }))

@@ -30,7 +30,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       allowselfenrol: dbgroup.allowselfenrol,
       allowguest: dbgroup.allowguest,
       site: {
-        _id: dbgroup.site._id,
+        _id: dbgroup.sid,
       },
     };
     //console.log('group', ugrop);

@@ -19,10 +19,7 @@ db.Groups.insertOne({
   showpublic: true, requireinitials: true, requirepin: false, 
   requireemail: false, allowselfenrol: true, password: "please", 
   allowguest: true, rewards: [], 
-  site:{_id:"test", name: "Test Site", 
-  description: "Test and development only",
-  admins:[{ email: "chris.greenhalgh@nottingham.ac.uk", password: "",
-  enabled: true }]}
+  sid:"test"
 });
 db.AdminSessions.insertOne({
   admin: "chris.greenhalgh@nottingham.ac.uk", password: "secret",

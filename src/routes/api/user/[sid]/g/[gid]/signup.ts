@@ -62,7 +62,7 @@ async function createNewUser(group: t.DBGroup, signup: t.SignupRequest,
       name: group.name,
       description: group.description,
       site: {
-        _id: group.site._id,
+        _id: group.sid,
 	// CSS, etc?
       },
     },

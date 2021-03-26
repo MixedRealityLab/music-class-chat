@@ -22,8 +22,8 @@ export interface DBSite extends USite {
 
 // Admin within Site, Admin view
 export interface AAdmin {
-  email: string;
-  enabled: boolean;
+  email: string
+  enabled: boolean
 }
 
 export interface DBAdmin extends AAdmin {
@@ -32,10 +32,10 @@ export interface DBAdmin extends AAdmin {
 }
 
 export interface AdminSession {
-  admin: string;
-  password: string;
-  sessionkey: string;
-  sessionexpires: string; // ISO date
+  id: string
+  email: string
+  password: string
+  expires: string // ISO date
 }
 
 // Group, User view
@@ -71,7 +71,7 @@ export interface AGroup extends UGroupBase, AGroupBase {
 
 // ... DB view
 export interface DBGroup extends UGroupBase, AGroupBase {
-  site: DBSite;
+  sid: string
 }
 
 // Reward - no filtering needed
