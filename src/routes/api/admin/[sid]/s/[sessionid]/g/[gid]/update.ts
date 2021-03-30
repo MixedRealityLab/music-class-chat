@@ -221,7 +221,7 @@ const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, SORTORDER, IFALL, ANDNOT];
 function splitRewards(value:string, group:t.DBGroup) : string[] {
   if (!value) 
     return [];
-  const rs = value.split(', \t;');
+  const rs = value.split(new RegExp("[, \t;]"));
   for (let r of rs) {
     if (!group.rewards.find(rw => rw._id ==r))
       throw `Found unknown reward ${r}`;
