@@ -3,12 +3,17 @@
     @tailwind components;
     @tailwind utilities;
 
-@layer base {
-  h1 {
-    @apply text-2xl font-bold;
-  }
-  h2 {
-    @apply text-xl font-bold;
-  }
-}
+    @layer base {
+        h1 {
+            @apply text-2xl font-bold;
+        }
+
+        h2 {
+            @apply text-xl font-bold;
+        }
+
+	    body {
+		    background: url("/backdrop.jpg");
+	    }
+    }
 </style>

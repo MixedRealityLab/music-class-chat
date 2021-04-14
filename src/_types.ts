@@ -3,6 +3,8 @@
 // Site / organisation - User view
 export interface USite {
   _id: string;
+  logo: string;
+  background: string;
   // TODO: CSS, etc.
 }
 
@@ -155,8 +157,11 @@ export interface ChatDefSummary {
   andnot?: string[];
   sortorder: number;
   name: string;
-  description: string;
-  icon: string;
+  description: string
+  icon?: string
+  primaryColour?: string
+  gradientStartColour?: string
+  gradientEndColour?: string
 }
 
 // full ChatDef

@@ -16,13 +16,13 @@
 - [ ] content zoom (resources and chat views)
 - [ ] chat view auto-scrolling (bottom/new messages) / fixed nav bar
 - [ ] user pin? (requires sessions)
-- [ ] google classrom integration??
+- [ ] google classroom integration??
 - [ ] fancy rewards background/placement? (TBD)
 - [ ] assets and styling (from designer)
 - [ ] site-specific css / styling
 - [ ] site public list page
 - [ ] admin session generate
-- [ ] admin session login
+- [x] admin session login
 - [ ] admin session checks (including group update)
 - [ ] admin group view
 - [ ] admin new group

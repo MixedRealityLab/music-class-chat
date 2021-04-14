@@ -13,6 +13,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
     const dbgroup = await req.app.locals.db.collection('Groups').findOne(
 	{ _id: `${sid}/${gid}` }
     ) as t.DBGroup;
+    const dbsite = await req.app.locals.db.collection('Sites').findOne({_id: sid}) as t.DBSite
     //console.log(`get group ${sid}/${gid}`, dbgroup);
     if (!dbgroup) {
       res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
@@ -31,6 +32,8 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       allowguest: dbgroup.allowguest,
       site: {
         _id: dbgroup.sid,
+        logo: dbsite.logo,
+        background: dbsite.background
       },
     };
     //console.log('group', ugrop);
