@@ -13,7 +13,7 @@
         }
 
 	    body {
-		    background: url("/backdrop.jpg");
-	    }
+            background: url("/backdrop.jpg") fixed;
+        }
     }
 </style>

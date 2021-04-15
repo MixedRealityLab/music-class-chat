@@ -6,7 +6,7 @@
 	const {sid} = $page.params
 	let email = ""
 	let password = ""
-	let statusCode: number = null
+	let status: String = null
 	let working = false
 
 	async function handleSubmit() {
@@ -19,8 +19,13 @@
 			method: "POST",
 			body: formData
 		});
-		statusCode = response.status;
-		working = false
+		const data = await response.json()
+		if (response.status == 200) {
+			status = "Check your email for a login link"
+		} else {
+			status = data.message
+			working = false
+		}
 	}
 </script>
 
@@ -30,18 +35,20 @@
 	<div class="max-w-6xl">
 		<label class="block">
 			<span>Admin Email</span>
-			<input class="mt-1 block w-full" required type="email" name="email" bind:value="{email}"/>
+			<input disabled={working} class="mt-1 block w-full" required type="email" name="email"
+			       bind:value="{email}"/>
 		</label>
 		<label class="block">
 			<span>Password</span>
-			<input class="mt-1 block w-full" required type="password" name="password" bind:value="{password}"/>
+			<input disabled={working} class="mt-1 block w-full" required type="password" name="password"
+			       bind:value="{password}"/>
 		</label>
 
 		<div class="px-8">
 			<input disabled={working} class="mt-1 w-full px-4 py-2 block bg-gray-300" type='submit' value='Login'>
 		</div>
-		{#if statusCode}
-			<p>Status: {statusCode}</p>
+		{#if status}
+			<p>{status}</p>
 		{/if}
 	</div>
 </form>

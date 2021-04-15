@@ -50,7 +50,7 @@ export async function post(req: ServerRequest, res: Response) {
 		}
 
 		// Should
-		const sessionUrl = req.protocol + '://' + req.hostname + req.baseUrl + sid + '/admin/session?key=' + session.password
+		const sessionUrl = req.protocol + '://' + req.hostname + ':3000/' + req.baseUrl + sid + '/admin/session?key=' + session.password
 		await req.app.locals.db.collection('AdminSessions').deleteMany({email: email})
 		await req.app.locals.db.collection('AdminSessions').insertOne(session)
 		if (emailConfigured) {

@@ -1,13 +1,14 @@
 import type {Response} from "express"
-import type {ServerRequest} from "../../../../_servertypes"
-import type {AdminSession, DBAdmin, DBSite} from "../../../../_types"
+import type {ServerRequest} from "../../../_servertypes"
+import type {AdminSession, DBAdmin, DBSite} from "../../../_types"
 
 export async function get(req: ServerRequest, res: Response) {
 	try {
 		const {sid} = req.params
 		const {key} = req.query
 		if (!sid || !key) {
-			res.status(400).json({error: 'Bad Request'})
+			// TODO Pass error messages
+			res.redirect(`/${sid}/admin/login`)
 			return
 		}
 
@@ -15,12 +16,12 @@ export async function get(req: ServerRequest, res: Response) {
 		const session: AdminSession = await req.app.locals.db.collection('AdminSessions').findOne({password: key})
 
 		if (session == null) {
-			res.status(401).json({error: 'Bad Request'})
+			res.redirect(`/${sid}/admin/login`)
 			return
 		}
 		const admin = site.admins.find((admin: DBAdmin) => admin.enabled && admin.email === session.email)
 		if (!admin) {
-			res.status(401).json({error: 'Not an Admin'})
+			res.redirect(`/${sid}/admin/login`)
 			return
 		}
 
@@ -32,7 +33,9 @@ export async function get(req: ServerRequest, res: Response) {
 		req.session.sessionid = session.id
 		req.session.cookie.expires = expires
 
-		res.json({})
+		console.log("success!")
+
+		res.redirect(`/${sid}/admin`)
 	} catch (error) {
 		console.log('Error (update group)', error);
 		res.writeHead(500).end(JSON.stringify({error: error}));

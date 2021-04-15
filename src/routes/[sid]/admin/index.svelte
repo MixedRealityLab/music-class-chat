@@ -23,7 +23,53 @@
 
 
 <script type="ts">
+	import {stores} from "@sapper/app";
+
+	const {page} = stores()
+	const {sid} = $page.params
+
+
 	export let groups: Array<UGroup> = []
+	export let groupName: string
+
+	async function handleSubmit() {
+		//working = true
+		const formData = new FormData()
+		formData.append("name", groupName)
+		console.log(`document.baseURI = ${document.baseURI}`)
+		const response = await fetch(`api/admin/${sid}/login`, {
+			method: "POST",
+			body: formData
+		});
+		const data = await response.json()
+		if (response.status == 200) {
+			status = "Check your email for a login link"
+		} else {
+			status = data.message
+		}
+	}
 </script>
 
 <h1>Groups</h1>
+
+{#each groups as group}
+	<a href="">{group.name}</a>
+{/each}
+
+<form class="p-4" on:submit|preventDefault={handleSubmit}>
+	<div class="max-w-6xl">
+		<label class="block">
+			<span>Group Name</span>
+			<input class="mt-1 block w-full" required type="text" name="name"
+			       bind:value="{groupName}"/>
+		</label>
+
+		<div class="px-8">
+			<input class="mt-1 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create Group'>
+		</div>
+		{#if status}
+			<p>{status}</p>
+		{/if}
+	</div>
+</form>
+

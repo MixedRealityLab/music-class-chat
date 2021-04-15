@@ -5,6 +5,11 @@ export async function isValidAdminSession(req: ServerRequest): Promise<boolean> 
 	const {sid} = req.params
 	const {sessionid} = req.session
 
+	if(!sessionid) {
+		console.log(`session id ${sessionid}`)
+		return false
+	}
+
 	const session = await req.app.locals.db.collection<AdminSession>('AdminSessions').findOne({id: sessionid});
 	if (!session) {
 		console.log(`no admin session found: ${sessionid}`)
