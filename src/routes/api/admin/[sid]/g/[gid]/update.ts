@@ -135,7 +135,7 @@ function asBoolean(value: string): boolean {
 		value.toLowerCase().charAt(0) == 't');
 }
 
-function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
+export function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
 	//console.log(`readGroup...`);
 	const summarysheet = wb.Sheets[SUMMARY];
 	if (!summarysheet)
@@ -186,7 +186,7 @@ const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, SORTORDER, IFALL, ANDNOT];
 function splitRewards(value: string, group: DBGroup): string[] {
 	if (!value)
 		return [];
-	const rs = value.split(', \t;');
+	const rs = value.split(new RegExp("[, \t;]"));
 	for (let r of rs) {
 		if (!group.rewards.find(rw => rw._id == r))
 			throw `Found unknown reward ${r}`;
@@ -194,7 +194,7 @@ function splitRewards(value: string, group: DBGroup): string[] {
 	return rs;
 }
 
-function readChatDefs(wb: xlsx.WorkBook, group: DBGroup): ChatDef[] {
+export function readChatDefs(wb: xlsx.WorkBook, group: DBGroup): ChatDef[] {
 	let cds: ChatDef[] = [];
 	const sheet = wb.Sheets[CHATS];
 	if (!sheet)

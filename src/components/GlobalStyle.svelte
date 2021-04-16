@@ -12,7 +12,8 @@
             @apply text-xl font-bold;
         }
 
-	    body {
+        body {
+	        color: #EEE;
             background: url("/backdrop.jpg") fixed;
         }
     }
