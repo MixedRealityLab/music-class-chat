@@ -6,7 +6,6 @@
 		const {sid} = page.params
 
 		const res = await this.fetch(`/api/admin/${sid}/groups`)
-		console.log(res.status)
 		if (res.status === 401) {
 			return this.redirect('302', `/${sid}/admin/login`)
 		} else if (res.status !== 200) {
@@ -24,15 +23,16 @@
 
 <script type="ts">
 	import {stores} from "@sapper/app";
+	import {slide} from 'svelte/transition';
 
 	const {page} = stores()
 	const {sid} = $page.params
-
 
 	export let groups: Array<UGroup> = []
 	let groupName: string
 	let files
 	let password: string
+	let createGroup = false
 
 	async function handleSubmit() {
 		//working = true
@@ -52,36 +52,41 @@
 		// 	status = data.message
 		// }
 	}
+
+	async function addGroup() {
+		console.log("add group")
+		createGroup = true
+	}
 </script>
 
-<h1>Groups</h1>
+<div class="p-4 flex flex-col items-center">
+	<h1>Groups</h1>
 
-{#each groups as group}
-	<a href="/${sid}/admin/${group.id}">{group.name}</a>
-{/each}
+	{#each groups as group}
+		<a href="/${sid}/admin/${group.id}">{group.name}</a>
+	{/each}
 
-<form class="p-4" on:submit|preventDefault={handleSubmit}>
-	<div class="max-w-6xl">
-		<label class="block">
-			<span>Group Name</span>
-			<input class="mt-1 block w-full" required type="text" name="name"
-			       bind:value="{groupName}"/>
-		</label>
-		<label class="block">
-			<span>Password</span>
-			<input class="mt-1 block w-full" required type="password" name="password"
-			       bind:value="{password}"/>
-		</label>
+	{#if createGroup}
+		<form transition:slide on:submit|preventDefault={handleSubmit}>
+			<label class="block pt-3">
+				<span>Group Name</span>
+				<input class="mt-1 block w-full" required type="text" name="name"
+				       bind:value="{groupName}"/>
+			</label>
+			<label class="block pt-3">
+				<span>Password</span>
+				<input class="mt-1 block w-full" required type="password" name="password"
+				       bind:value="{password}"/>
+			</label>
 
-		<label class="block">
-			<span>Spreadsheet (file):</span>
-			<input class="mt-1 block w-full" required id="file" type="file" bind:files/>
-		</label>
+			<label class="block pt-3">
+				<span>Spreadsheet</span>
+				<input class="mt-1 block w-full text-white" required id="file" type="file" bind:files/>
+			</label>
 
-
-		<div class="px-8">
-			<input class="mt-1 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create Group'>
-		</div>
-	</div>
-</form>
-
+			<input class="mt-4 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create New Group'>
+		</form>
+	{:else}
+		<button on:click={addGroup}>Add Group</button>
+	{/if}
+</div>

@@ -3,11 +3,11 @@
   export let content;
 </script>
 
-<div class="mt-0.5 block w-full bg-gray-300 px-4 py-2 rounded-b-2xl">
+<div>
   {#if content.type === ContentType.image}
     <img src="{content.url}" alt="{content.title}">
   {:else if content.type === ContentType.youtube}
-    <iframe title="{content.title}" 
+    <iframe title="{content.title}" class="width: 48rem"
      src="{content.url.indexOf('/embed/')<0 ? 'https://youtube.com/embed/'+content.url.substring(content.url.lastIndexOf('/')) : content.url}"
      frameborder="0" allow="encrypted-media; picture-in-picture" 
      allowfullscreen></iframe>

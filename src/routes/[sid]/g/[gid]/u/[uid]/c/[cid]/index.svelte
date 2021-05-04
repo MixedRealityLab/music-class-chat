@@ -67,7 +67,8 @@
 			userinput = userchat.messages[userchat.messages.length - 1].userinput;
 		}
 		let now = new Date();
-		const chatdef = userchat.chatdef as ChatDef; // trust me!
+		const chatdef = userchat.chatdef as ChatDef // trust me!
+		console.log(chatdef)
 		const nextstep = getNextStep(user, userchat, chatdef, (now.getTime() - reftime.getTime()) / 1000, userinput);
 		console.log(`nextstep`, nextstep);
 		// TODO
@@ -159,7 +160,7 @@
 		}
 		let umsg: UserMessage = {
 			userinput: userinput,
-			//date: new Date().toISOString(),
+			date: new Date().toISOString(),
 		}
 		// patch client
 		userchat.messages.push(umsg);
@@ -202,21 +203,24 @@
 
 <AppBar backpage="{backurl}">
 	{#if user.group.site.logo}
-		<img style="height: 32px" src="{user.group.site.logo}">
+		<img class="px-4 h-16 pb-8" src="{user.group.site.logo}" alt="Logo">
 	{/if}
 </AppBar>
-<div class="px-2">
+<div class="pt-20 px-2 max-w-3xl mx-auto">
 
 	{#if error}
 		<p>ERROR: {error}</p>
 	{:else}
 		<div class="p-4 flex flex-col items-center text-white">
 			<h2 style="color: {userchat.chatdef.primaryColour}">{userchat.chatdef.name}</h2>
+			{#if userchat.chatdef.icon}
+				<img src="{userchat.chatdef.icon}" alt="Chat Icon"/>
+			{/if}
 
 			{#each messages as um}
 				{#if um.userinput}
 					<div class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl"
-					     style="{userchat.chatdef.gradientEndColour != null && userchat.chatdef.gradientStartColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.gradientStartColour + ',' + userchat.chatdef.gradientEndColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
+					     style="filter: saturate(80%); {userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
 						<p>{um.userinput}</p>
 					</div>
 				{/if}
@@ -238,7 +242,6 @@
 						</div>
 					{/each}
 				{/if}
-
 			{/each}
 		</div>
 
@@ -246,14 +249,14 @@
 			<div class="mt-3 grid grid-cols-1 gap-2 bg-gray-800 p-2">
 				<p class="text-white">Waiting for you to say...</p>
 				{#each waitfor as userinput}
-					<div class="mt-1 block w-full bg-gray-100 p-2"
-					     on:click={handleUserInput(userinput)}>
-						<p class="text-right">{userinput}</p>
-					</div>
+					<button class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
+					        on:click={handleUserInput(userinput)}
+					        style="{userchat.chatdef.primaryColour != null && userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
+						{userinput}
+					</button>
 				{/each}
 			</div>
 		{/if}
 
 	{/if}
-
 </div>

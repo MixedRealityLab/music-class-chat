@@ -13,13 +13,20 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
     const dbuser = await req.app.locals.db.collection('Users').findOne(
 	{ _id: `${sid}/${gid}/${uid}` }
     ) as t.DBUser;
+    const dbsite = await req.app.locals.db.collection('Sites').findOne(
+        {_id: sid}
+    )
     //console.log(`get user ${sid}/${gid}/${uid}`, dbuser);
     if (!dbuser) {
       res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
       return;
     }
+    dbuser.group.site = {
+      _id: dbsite._id,
+      logo: dbsite.logo
+    }
     const uuser: t.UUser = {
-      _id: dbuser._id, 
+      _id: dbuser._id,
       usercode: dbuser.usercode,
       groupid: dbuser.groupid,
       group: dbuser.group,

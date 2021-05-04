@@ -4,7 +4,6 @@
 export interface USite {
   _id: string;
   logo: string;
-  background: string;
   // TODO: CSS, etc.
 }
 
@@ -160,8 +159,7 @@ export interface ChatDefSummary {
   description: string
   icon?: string
   primaryColour?: string
-  gradientStartColour?: string
-  gradientEndColour?: string
+  secondaryColour?: string
 }
 
 // full ChatDef

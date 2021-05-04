@@ -33,7 +33,6 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       site: {
         _id: dbgroup.sid,
         logo: dbsite.logo,
-        background: dbsite.background
       },
     };
     //console.log('group', ugrop);
