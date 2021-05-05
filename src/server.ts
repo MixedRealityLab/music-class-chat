@@ -15,28 +15,31 @@ let FileStore = (SessionFileStore)(session)
 let fileStoreOptions = {}
 
 console.log(`base path: ${BASEPATH}`)
-app.use(BASEPATH, express.static('static'))
-app.use(BASEPATH, cors())
-app.use(BASEPATH, express.json())
-app.use(BASEPATH, fileupload({
-	limits: {fileSize: 2 * 1024 * 1024},
-	//useTempFiles : true,
-	//tempFileDir : '/tmp/'
-}))
-app.use(BASEPATH, session({
-	secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'notverysecret',
-	resave: false,
-	saveUninitialized: false,
-	/* cookie: { secure: true }, */
-	/* mainly for dev (restartable) */
-	store: new FileStore(fileStoreOptions),
-}))
-app.use(BASEPATH, sapper.middleware({
-	session: (req: ServerRequest, res: sapper.SapperResponse) => ({
-		sessionid: req.session.sessionid
-		//userid: req.session.userid,
+app.use(
+	BASEPATH,
+	express.static('static'),
+	cors(),
+	express.json(),
+	fileupload({
+		limits: {fileSize: 2 * 1024 * 1024},
+		//useTempFiles : true,
+		//tempFileDir : '/tmp/'
+	}),
+	session({
+		secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'notverysecret',
+		resave: false,
+		saveUninitialized: false,
+		/* cookie: { secure: true }, */
+		/* mainly for dev (restartable) */
+		store: new FileStore(fileStoreOptions),
+	}),
+	sapper.middleware({
+		session: (req: ServerRequest, res: sapper.SapperResponse) => ({
+			sessionid: req.session.sessionid
+			//userid: req.session.userid,
+		})
 	})
-}))
+)
 
 let delay = 1000;
 const attemptConnection = function () {
