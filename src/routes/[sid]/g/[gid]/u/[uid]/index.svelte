@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common";
-	import type * as t from '../../../../../../_types';
+	import type {Preload} from "@sapper/common"
+	import type {GenericResponse, UUser} from "../../../../../../_types";
 
 	export const preload: Preload = async function (this, page, session) {
 		const {sid, gid, uid} = page.params;
@@ -8,11 +8,11 @@
 		if (res.status !== 200) {
 			return {error: `Sorry, there was a problem (${res.status})`};
 		}
-		const data = await res.json() as t.GenericResponse;
+		const data = await res.json() as GenericResponse
 		if (data.error) {
 			return {error: data.error}
 		} else {
-			return {user: data as t.UUser}
+			return {user: data as UUser}
 		}
 	}
 </script>
@@ -24,7 +24,7 @@
 	const {page} = stores()
 	const {sid, gid, uid} = $page.params
 	export let error: string
-	export let user: t.UUser
+	export let user: UUser
 </script>
 
 <AppBar title="{user ? user.group.name : 'Error'}">
@@ -40,7 +40,7 @@
 			{#if user.group.site.logo}
 				<img class="px-4 pb-8 max-w-sm self-center" src="{user.group.site.logo}" alt="Logo">
 			{/if}
-			{#each user.chats as uc}
+			{#each user.chats.sort((a, b) => a.chatdef.sortorder - b.chatdef.sortorder) as uc}
 				{#if uc.enabled}
 					<a href="{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/"
 					   class="mt-3 block w-full py-3 px-6 flex items-center rounded-2xl text-white"

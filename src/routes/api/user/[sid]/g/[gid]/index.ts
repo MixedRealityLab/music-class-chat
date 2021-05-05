@@ -1,6 +1,6 @@
 import type { SapperResponse } from '@sapper/server';
-import type * as t from '../../../../../../_types';
 import type { ServerRequest } from '../../../../../../_servertypes'
+import type {DBGroup, DBSite, UGroup} from "../../../../../../_types";
 
 export async function get(req: ServerRequest, res: SapperResponse, next: () => void) {
   try {
@@ -12,14 +12,14 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
 
     const dbgroup = await req.app.locals.db.collection('Groups').findOne(
 	{ _id: `${sid}/${gid}` }
-    ) as t.DBGroup;
-    const dbsite = await req.app.locals.db.collection('Sites').findOne({_id: sid}) as t.DBSite
+    ) as DBGroup
+    const dbsite = await req.app.locals.db.collection('Sites').findOne({_id: sid}) as DBSite
     //console.log(`get group ${sid}/${gid}`, dbgroup);
     if (!dbgroup) {
       res.writeHead(404).end(JSON.stringify({error:'Not Found'}));
       return;
     }
-    const ugroup: t.UGroup = {
+    const ugroup: UGroup = {
       id: dbgroup.id,
       _id: dbgroup._id, 
       name: dbgroup.name,

@@ -1,6 +1,6 @@
 import type { SapperResponse } from '@sapper/server';
-import type * as t from '../../../../../../../../_types';
 import type { ServerRequest } from '../../../../../../../../_servertypes'
+import type {DBUser, UUser} from "../../../../../../../../_types";
 
 export async function get(req: ServerRequest, res: SapperResponse, next: () => void) {
   try {
@@ -12,7 +12,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
 
     const dbuser = await req.app.locals.db.collection('Users').findOne(
 	{ _id: `${sid}/${gid}/${uid}` }
-    ) as t.DBUser;
+    ) as DBUser
     const dbsite = await req.app.locals.db.collection('Sites').findOne(
         {_id: sid}
     )
@@ -25,7 +25,7 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       _id: dbsite._id,
       logo: dbsite.logo
     }
-    const uuser: t.UUser = {
+    const uuser: UUser = {
       _id: dbuser._id,
       usercode: dbuser.usercode,
       groupid: dbuser.groupid,
