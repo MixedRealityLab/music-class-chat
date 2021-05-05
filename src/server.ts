@@ -8,8 +8,7 @@ import {MongoClient} from "mongodb"
 import SessionFileStore from 'session-file-store'
 import type {ServerRequest} from './_servertypes'
 
-const {PORT, MONGODB, BASE_PATH} = process.env
-const BASEPATH = (typeof BASE_PATH === 'undefined') ? '' : BASE_PATH
+const {PORT, MONGODB, BASEPATH} = process.env
 const app = express()
 
 let FileStore = (SessionFileStore)(session)
