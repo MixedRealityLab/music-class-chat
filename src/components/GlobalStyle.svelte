@@ -14,7 +14,7 @@
 
         body {
             color: #EEE;
-            background: url("/backdrop.jpg") fixed;
+            background: url("../backdrop.jpg") fixed;
         }
 
         a, button {
