@@ -51,7 +51,8 @@ export async function post(req: ServerRequest, res: Response) {
 		await req.app.locals.db.collection('Groups').replaceOne({_id: group._id}, group);
 		await req.app.locals.db.collection('ChatDefs').deleteMany({groupid: group._id});
 		await req.app.locals.db.collection('ChatDefs').insertMany(chatdefs);
-		res.json({});
+		const groups = await req.app.locals.db.collection<DBGroup>('Groups').find({sid: sid}).toArray()
+		res.json({groups});
 	} catch (error) {
 		console.log('Error (update group)', error);
 		res.status(500).json({error: error})

@@ -169,11 +169,12 @@ export interface ChatDef extends ChatDefSummary {
 
 // UserMessage
 export interface UserMessage {
-  userinput?: string;
-  message?: string;
-  content?: Content;
-  rewardicons?: string[];
-  date: string; // Date
+  userinput?: string
+  message?: string
+  style?: string
+  content?: Content
+  rewardicons?: string[]
+  date: string // Date
 }
 
 // UserChat minus messages

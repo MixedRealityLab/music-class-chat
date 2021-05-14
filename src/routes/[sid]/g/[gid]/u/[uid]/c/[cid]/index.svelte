@@ -46,11 +46,21 @@
 
 	const {page} = stores();
 	const {sid, gid, uid, cid} = $page.params;
-	let backurl = `${sid}/g/${gid}/u/${uid}/`;
-	let reftime = new Date();
-	let waitfor: string [] = null;
-	let timer = null;
-	let messages: UserMessage[] = userchat.messages;
+	const markup = new RegExp(/^\[(\w+)]\s*(.*)$/)
+	let backurl = `${sid}/g/${gid}/u/${uid}/`
+	let reftime = new Date()
+	let waitfor: string [] = null
+	let timer = null
+	let messages: UserMessage[] = userchat.messages
+	messages.forEach(message => {
+		if (message.message != null) {
+			let result = markup.exec(message.message)
+			if (result != null) {
+				message.message = result[2]
+				message.style = result[1]
+			}
+		}
+	})
 
 	onDestroy(() => {
 		if (timer) clearTimeout(timer);
@@ -75,7 +85,7 @@
 		if (nextstep.done)
 			return;
 		if (nextstep.after !== undefined && nextstep.after !== null) {
-			timer = setTimeout(nextstep.after, checkMessages);
+			timer = setTimeout(checkMessages, nextstep.after);
 			return;
 		}
 		if (nextstep.waitfor && nextstep.waitfor.length > 0) {
@@ -201,6 +211,32 @@
 
 </script>
 
+<style>
+    .message-mt, .message-at {
+        @apply text-3xl mb-8
+    }
+
+    .message-mb, .message-ab, .message-mt, .message-at {
+        @apply font-bold
+    }
+
+    .message-m, .message-mb, .message-mt {
+        @apply text-center text-white
+    }
+
+    .message-at {
+        @apply text-left text-purple-400 text-xl mb-2
+    }
+
+    .message-a, .message-ab {
+        @apply text-left text-white
+    }
+
+    .message-ac {
+        @apply text-left text-purple-400 text-sm
+    }
+</style>
+
 <AppBar backpage="{backurl}">
 	{#if user.group.site.logo}
 		<img class="px-4 h-16 pb-8" src="{user.group.site.logo}" alt="Logo">
@@ -212,22 +248,22 @@
 		<p>ERROR: {error}</p>
 	{:else}
 		<div class="p-4 flex flex-col items-center text-white">
-			<h2 style="color: {userchat.chatdef.primaryColour}">{userchat.chatdef.name}</h2>
 			{#if userchat.chatdef.icon}
 				<img src="{userchat.chatdef.icon}" alt="Chat Icon"/>
 			{/if}
 
 			{#each messages as um}
 				{#if um.userinput}
-					<div class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl"
+					<div class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl text-gray-300"
 					     style="filter: saturate(80%); {userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
-						<p>{um.userinput}</p>
+						{um.userinput}
 					</div>
 				{/if}
 
 				{#if um.message}
-					<div>
-						<p>{um.message}</p>
+					<div class="{um.style ? 'message-' + um.style: ''}"
+					     style="{um.style === 'mt' ? 'color: ' +  userchat.chatdef.primaryColour: '' }">
+						{um.message}
 					</div>
 				{/if}
 

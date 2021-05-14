@@ -25,7 +25,7 @@
 - [x] admin session login
 - [ ] admin session checks (including group update)
 - [ ] admin group view
-- [ ] admin new group
+- [x] admin new group
 - [ ] admin user view
 - [ ] admin add user(s)
 - [ ] admin file upload support

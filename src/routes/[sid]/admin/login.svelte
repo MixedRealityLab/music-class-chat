@@ -47,8 +47,6 @@
 	}
 </script>
 
-<AppBar title="Admin Login"/>
-
 <form class="p-4 flex flex-col items-center" on:submit|preventDefault={handleSubmit}>
 	{#if site.logo}
 		<img class="px-4 pb-8 max-w-sm" src="{site.logo}" alt="Logo">

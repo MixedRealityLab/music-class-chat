@@ -32,22 +32,17 @@
 <AppBar title="{user ? user.group.name : 'Error'}">
 	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="resources"/>
 </AppBar>
-<div class="px-2">
-
-
+<div class="px-2 pt-20">
 	{#if error}
 		<p>ERROR: {error}</p>
 	{:else}
-
-		<div class="grid grid-cols-1 gap-2">
+		<div class="max-w-3xl mx-auto grid grid-cols-2 gap-2">
 			{#each user.content as content, ix}
-				{#if content.section && (ix == 0 || user.content[ix - 1].section != content.section) }
+				{#if content.section && (ix === 0 || user.content[ix - 1].section !== content.section) }
 					<div class="pt-2 text-lg">{content.section}</div>
 				{/if}
 				<Content content="{content}"/>
 			{/each}
 		</div>
-
 	{/if}
-
 </div>

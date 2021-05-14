@@ -1,6 +1,8 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common";
-	import type {UGroup} from "../../../_types";
+	import type {Preload} from "@sapper/common"
+	import {DialogContent, DialogOverlay} from 'svelte-accessible-dialog'
+	import type {UGroup} from "../../../_types"
+
 
 	export const preload: Preload = async function (this, page, session) {
 		const {sid} = page.params
@@ -15,7 +17,7 @@
 		if (data.error) {
 			return {error: data.error};
 		} else {
-			return {groups: data as Array<UGroup>};
+			return {groups: data.groups as Array<UGroup>};
 		}
 	}
 </script>
@@ -23,19 +25,20 @@
 
 <script type="ts">
 	import {stores} from "@sapper/app";
-	import {slide} from 'svelte/transition';
 
 	const {page} = stores()
 	const {sid} = $page.params
 
 	export let groups: Array<UGroup> = []
-	let groupName: string
+
+	let groupName = ""
 	let files
-	let password: string
+	let password = ""
 	let createGroup = false
 
 	async function handleSubmit() {
 		//working = true
+		createGroup = false
 		const formData = new FormData()
 		formData.append("name", groupName)
 		formData.append("password", password)
@@ -46,6 +49,7 @@
 			body: formData
 		});
 		const data = await response.json()
+		groups = data.groups
 		// if (response.status == 200) {
 		// 	status = "Check your email for a login link"
 		// } else {
@@ -54,8 +58,11 @@
 	}
 
 	async function addGroup() {
-		console.log("add group")
 		createGroup = true
+	}
+
+	async function close() {
+		createGroup = false
 	}
 </script>
 
@@ -63,30 +70,33 @@
 	<h1>Groups</h1>
 
 	{#each groups as group}
-		<a href="/${sid}/admin/${group.id}">{group.name}</a>
+		<a href="/{sid}/admin/{group.id}">{group.name}</a>
 	{/each}
 
-	{#if createGroup}
-		<form transition:slide on:submit|preventDefault={handleSubmit}>
-			<label class="block pt-3">
-				<span>Group Name</span>
-				<input class="mt-1 block w-full" required type="text" name="name"
-				       bind:value="{groupName}"/>
-			</label>
-			<label class="block pt-3">
-				<span>Password</span>
-				<input class="mt-1 block w-full" required type="password" name="password"
-				       bind:value="{password}"/>
-			</label>
+	<DialogOverlay isOpen="{createGroup}" onDismiss={close}>
+		<DialogContent aria-label="Definition" class="z-50 w-1/2"
+		               style="background: #222; filter: drop-shadow(0 4px 8px #0008);">
+			<form on:submit|preventDefault={handleSubmit}>
+				<label class="block pt-3">
+					<span>Group Name</span>
+					<input class="mt-1 block w-full" required type="text" name="name"
+					       bind:value="{groupName}"/>
+				</label>
+				<label class="block pt-3">
+					<span>Password</span>
+					<input class="mt-1 block w-full" required type="password" name="password"
+					       bind:value="{password}"/>
+				</label>
 
-			<label class="block pt-3">
-				<span>Spreadsheet</span>
-				<input class="mt-1 block w-full text-white" required id="file" type="file" bind:files/>
-			</label>
+				<label class="block pt-3">
+					<span>Spreadsheet</span>
+					<input class="mt-1 block w-full text-white" required id="file" type="file" bind:files/>
+				</label>
 
-			<input class="mt-4 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create New Group'>
-		</form>
-	{:else}
-		<button on:click={addGroup}>Add Group</button>
-	{/if}
+				<input class="mt-4 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create New Group'>
+			</form>
+		</DialogContent>
+	</DialogOverlay>
+
+	<button on:click={addGroup}>Add Group</button>
 </div>
