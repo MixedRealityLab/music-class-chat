@@ -1,20 +1,21 @@
 <script context="module" lang="ts">
 	import type {Preload} from "@sapper/common"
+	import type {UUser} from "../../../../../_types"
 
 	export const preload: Preload = async function (this, page, session) {
-		const {sid, gid} = page.params
+		const {sid, gid, uid} = page.params
 
 		const res = await this.fetch(`/api/admin/${sid}/g/${gid}`)
 		if (res.status === 401) {
 			return this.redirect('302', `/${sid}/admin/login`)
 		} else if (res.status !== 200) {
-			return {error: `http response ${res.status}`}
+			return {error: `http response ${res.status}`};
 		}
 		const data = await res.json()
 		if (data.error) {
-			return {error: data.error}
+			return {error: data.error};
 		} else {
-			return {users: data}
+			return {users: data as Array<UUser>};
 		}
 	}
 </script>

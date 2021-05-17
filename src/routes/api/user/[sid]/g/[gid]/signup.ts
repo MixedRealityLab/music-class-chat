@@ -1,9 +1,10 @@
 import type {SapperResponse} from '@sapper/server';
-import * as crypto from 'crypto';
 import type {Db} from 'mongodb';
+import {customAlphabet} from "nanoid";
 import {isEnabled} from '../../../../../../_logic';
 import type {ServerRequest} from '../../../../../../_servertypes';
 import type {ChatDef, DBGroup, DBUser, SignupRequest, SignupResponse, UserChat} from "../../../../../../_types";
+import {idAlphabet} from "../../../../../../_types";
 
 export async function post(req: ServerRequest, res: SapperResponse) {
 	try {
@@ -49,7 +50,8 @@ export async function post(req: ServerRequest, res: SapperResponse) {
 
 async function createNewUser(group: DBGroup, signup: SignupRequest,
                              db: Db): Promise<DBUser> {
-	const uid: string = crypto.randomBytes(12).toString('hex');
+
+	const uid: string = customAlphabet(idAlphabet, 10)();
 	//console.log(`new user id: ${_id}`);
 	const now = new Date().toISOString();
 	let user: DBUser = {

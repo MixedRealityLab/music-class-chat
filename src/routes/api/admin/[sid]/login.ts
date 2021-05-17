@@ -3,6 +3,7 @@ import type {Response} from "express"
 import {customAlphabet} from "nanoid"
 import nodemailer from 'nodemailer'
 import type {ServerRequest} from "../../../../_servertypes"
+import {idAlphabet} from "../../../../_types";
 import type {AdminSession, DBAdmin, DBSite} from "../../../../_types"
 
 const emailConfigured = 'SMTP.host' in process.env
@@ -41,11 +42,10 @@ export async function post(req: ServerRequest, res: Response) {
 
 		const expires = addHours(new Date(), 1)
 
-		const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 		const session: AdminSession = {
-			id: customAlphabet(alphabet, 8)(),
+			id: customAlphabet(idAlphabet, 8)(),
 			email: email,
-			password: customAlphabet(alphabet, 12)(),
+			password: customAlphabet(idAlphabet, 12)(),
 			expires: expires.toISOString()
 		}
 
