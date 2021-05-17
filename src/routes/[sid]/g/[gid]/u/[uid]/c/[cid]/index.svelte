@@ -54,6 +54,7 @@
 	let reftime = new Date()
 	let waitfor: string [] = null
 	let timer = null
+	let autoscroll = false
 	let messages: UserMessage[] = userchat.messages
 	messages.forEach(message => {
 		if (message.message != null) {
@@ -66,11 +67,13 @@
 	})
 
 	afterUpdate(() => {
-		document.scrollingElement.scroll({top: document.scrollingElement.scrollHeight, behavior: 'smooth'});
+		if(autoscroll) {
+			document.scrollingElement.scroll({top: document.scrollingElement.scrollHeight, behavior: 'smooth'})
+		}
 	});
 
 	onDestroy(() => {
-		if (timer) clearTimeout(timer);
+		if (timer) clearTimeout(timer)
 	});
 
 	onMount(checkMessages);
@@ -81,13 +84,13 @@
 		timer = null;
 		let userinput: string = "";
 		if (userchat.messages.length > 0) {
-			userinput = userchat.messages[userchat.messages.length - 1].userinput;
+			userinput = userchat.messages[userchat.messages.length - 1].userinput
 		}
 		let now = new Date();
 		const chatdef = userchat.chatdef as ChatDef // trust me!
-		console.log(chatdef)
+		//console.log(chatdef)
 		const nextstep = getNextStep(user, userchat, chatdef, (now.getTime() - reftime.getTime()) / 1000, userinput);
-		console.log(`nextstep`, nextstep);
+		//console.log(`nextstep`, nextstep);
 		// TODO
 		if (nextstep.done)
 			return;
@@ -100,6 +103,7 @@
 			return;
 		}
 		if (nextstep.do) {
+			autoscroll = true
 			let umsg: UserMessage = {
 				message: nextstep.do.message,
 				content: nextstep.do.content,
@@ -143,7 +147,7 @@
 				for (let reward of nextstep.do.rewards) {
 					let userreward = user.rewards.find((ur) => ur._id == reward)
 					if (userreward) {
-						console.log(`got reward ${userreward._id}`)
+						//console.log(`got reward ${userreward._id}`)
 						userreward.got = true
 					} else {
 						console.log(`could not find reward ${reward} to add`)
@@ -154,7 +158,7 @@
 				for (let reward of nextstep.do.reset) {
 					let userreward = user.rewards.find((ur) => ur._id == reward)
 					if (userreward) {
-						console.log(`reset reward ${userreward._id}`)
+						//console.log(`reset reward ${userreward._id}`)
 						userreward.got = false
 					} else {
 						console.log(`could not find reward ${reward} to reset`)
