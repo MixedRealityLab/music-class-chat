@@ -27,11 +27,12 @@
 	}
 </script>
 <script lang="ts">
-	import AppBar from '../../../../../../../../components/AppBar.svelte';
-	import Content from '../../../../../../../../components/Content.svelte';
-	import {stores} from '@sapper/app';
-	import {onDestroy, onMount} from 'svelte';
-	import {getNextStep, isEnabled} from '../../../../../../../../_logic';
+	import AppBar from '../../../../../../../../components/AppBar.svelte'
+	import Content from '../../../../../../../../components/Content.svelte'
+	import {stores} from '@sapper/app'
+	import {onDestroy, onMount, beforeUpdate, afterUpdate} from 'svelte'
+	import {getNextStep, isEnabled} from '../../../../../../../../_logic'
+
 	import type {
 		AddUserMessageRequest,
 		ChatDef,
@@ -40,14 +41,16 @@
 		UUser
 	} from '../../../../../../../../_types';
 
-	export let error: string;
-	export let user: UUser;
-	export let userchat: UserChat;
+	export let error: string
+	export let user: UUser
+	export let userchat: UserChat
 
-	const {page} = stores();
-	const {sid, gid, uid, cid} = $page.params;
-	const markup = new RegExp(/^\[([am][bct]?)]\s*(.*)$/)
+	const checkFreq = 250
+	const {page} = stores()
+	const {sid, gid, uid, cid} = $page.params
+	const markup = new RegExp(/^\[([aAmM][bBcCtT]?)]\s*(.*)$/)
 	let backurl = `${sid}/g/${gid}/u/${uid}/`
+	let typing = false
 	let reftime = new Date()
 	let waitfor: string [] = null
 	let timer = null
@@ -61,6 +64,10 @@
 			}
 		}
 	})
+
+	afterUpdate(() => {
+		document.scrollingElement.scroll({top: document.scrollingElement.scrollHeight, behavior: 'smooth'});
+	});
 
 	onDestroy(() => {
 		if (timer) clearTimeout(timer);
@@ -99,67 +106,75 @@
 				rewardicons: [],
 				date: new Date().toISOString(),
 			}
+			if (umsg.message != null) {
+				let result = markup.exec(umsg.message)
+				if (result != null) {
+					umsg.message = result[2]
+					umsg.style = result[1]
+				}
+			}
 			if (nextstep.do.rewards) {
 				for (let reward of nextstep.do.rewards) {
-					let ur = user.rewards.find((r) => r._id == reward);
+					let ur = user.rewards.find((r) => r._id == reward)
 					if (ur && ur.icon) {
-						umsg.rewardicons.push(ur.icon);
+						umsg.rewardicons.push(ur.icon)
 					}
 				}
 			}
 			while (userchat.nextix < chatdef.messages.length && chatdef.messages[userchat.nextix].ornext) {
-				userchat.nextix++;
+				userchat.nextix++
 			}
-			userchat.nextix++;
+			userchat.nextix++
 
 			if (nextstep.do.jumpto) {
 				for (let ix in chatdef.messages) {
 					if (nextstep.do.jumpto == chatdef.messages[ix].label) {
-						userchat.nextix = ix;
+						userchat.nextix = ix
 						break;
 					}
 				}
 			}
 
 			// patch client
-			userchat.messages.push(umsg);
-			messages = userchat.messages;
+			userchat.messages.push(umsg)
+			messages = userchat.messages
 			// rewards, reset
 			if (nextstep.do.rewards) {
 				for (let reward of nextstep.do.rewards) {
-					let userreward = user.rewards.find((ur) => ur._id == reward);
+					let userreward = user.rewards.find((ur) => ur._id == reward)
 					if (userreward) {
-						console.log(`got reward ${userreward._id}`);
-						userreward.got = true;
+						console.log(`got reward ${userreward._id}`)
+						userreward.got = true
 					} else {
-						console.log(`could not find reward ${reward} to add`);
+						console.log(`could not find reward ${reward} to add`)
 					}
 				}
 			}
 			if (nextstep.do.reset) {
 				for (let reward of nextstep.do.reset) {
-					let userreward = user.rewards.find((ur) => ur._id == reward);
+					let userreward = user.rewards.find((ur) => ur._id == reward)
 					if (userreward) {
-						console.log(`reset reward ${userreward._id}`);
-						userreward.got = false;
+						console.log(`reset reward ${userreward._id}`)
+						userreward.got = false
 					} else {
-						console.log(`could not find reward ${reward} to reset`);
+						console.log(`could not find reward ${reward} to reset`)
 					}
 				}
 			}
 			// enabled, etc. on UserChats
 			for (let uc of user.chats) {
-				uc.enabled = isEnabled(user.rewards, uc.allof, uc.andnot);
+				uc.enabled = isEnabled(user.rewards, uc.allof, uc.andnot)
 			}
 			// content
 			if (nextstep.do.content && !nextstep.do.content.hidden) {
-				user.content.push(nextstep.do.content);
-				user.content.sort((a, b) => (a.sortorder ? a.sortorder : 0) - (b.sortorder ? b.sortorder : 0));
+				user.content.push(nextstep.do.content)
+				user.content.sort((a, b) => (a.sortorder ? a.sortorder : 0) - (b.sortorder ? b.sortorder : 0))
 			}
+
 			// update server
 			// TODO: waiting ?
-			updateServer(umsg, nextstep.do.rewards, nextstep.do.reset, userchat.nextix, false);
-			timer = setTimeout(checkMessages, 250);
+			updateServer(umsg, nextstep.do.rewards, nextstep.do.reset, userchat.nextix, false)
+			timer = setTimeout(checkMessages, checkFreq)
 		}
 	}
 
@@ -180,7 +195,7 @@
 		// TODO waiting ?
 		updateServer(umsg, [], [], userchat.nextix, false);
 
-		timer = setTimeout(checkMessages, 250);
+		timer = setTimeout(checkMessages, checkFreq);
 	}
 
 	// async? or just hope...
@@ -254,10 +269,14 @@
 
 			{#each messages as um}
 				{#if um.userinput}
-					<div class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl text-gray-300"
+					<div class="mb-6 mt-2 block py-2 px-6 flex rounded-2xl text-gray-300"
 					     style="filter: saturate(80%); {userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
 						{um.userinput}
 					</div>
+				{/if}
+
+				{#if um.content}
+					<Content content="{um.content}"/>
 				{/if}
 
 				{#if um.message}
@@ -265,10 +284,6 @@
 					     style="{um.style === 'mt' ? 'color: ' +  userchat.chatdef.primaryColour: '' }">
 						{um.message}
 					</div>
-				{/if}
-
-				{#if um.content}
-					<Content content="{um.content}"/>
 				{/if}
 
 				{#if um.rewardicons}
@@ -279,20 +294,18 @@
 					{/each}
 				{/if}
 			{/each}
+
+			{#if waitfor && waitfor.length > 0 }
+				<div class="flex flex-col items-center px-4 pb-6">
+					{#each waitfor as userinput}
+						<button class="my-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
+						        on:click={handleUserInput(userinput)}
+						        style="{userchat.chatdef.primaryColour != null && userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
+							{userinput}
+						</button>
+					{/each}
+				</div>
+			{/if}
 		</div>
-
-		{#if waitfor && waitfor.length > 0 }
-			<div class="mt-3 grid grid-cols-1 gap-2 bg-gray-800 p-2">
-				<p class="text-white">Waiting for you to say...</p>
-				{#each waitfor as userinput}
-					<button class="mt-4 mb-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
-					        on:click={handleUserInput(userinput)}
-					        style="{userchat.chatdef.primaryColour != null && userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
-						{userinput}
-					</button>
-				{/each}
-			</div>
-		{/if}
-
 	{/if}
 </div>

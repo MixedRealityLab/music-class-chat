@@ -17,6 +17,7 @@ export interface NextStep {
   error?: string,
   done?:boolean,
 }
+
 export function getNextStep(user: t.UUser, userchat: t.UserChat, chatdef: t.ChatDef, waiting: number, userinput: string) : NextStep {
   let nextstep: NextStep = { waitfor: [] };
   if (userchat.nextix<0 || userchat.nextix >= chatdef.messages.length) {
