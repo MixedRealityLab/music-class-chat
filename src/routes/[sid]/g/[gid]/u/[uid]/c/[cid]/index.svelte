@@ -46,7 +46,7 @@
 
 	const {page} = stores();
 	const {sid, gid, uid, cid} = $page.params;
-	const markup = new RegExp(/^\[(\w+)]\s*(.*)$/)
+	const markup = new RegExp(/^\[([am][bct]?)]\s*(.*)$/)
 	let backurl = `${sid}/g/${gid}/u/${uid}/`
 	let reftime = new Date()
 	let waitfor: string [] = null
