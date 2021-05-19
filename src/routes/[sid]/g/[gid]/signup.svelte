@@ -73,7 +73,7 @@
 	{#if error}
 		<p>ERROR: {error}</p>
 	{:else}
-		<img class="p-8 max-w-sm mx-auto" src="{group.site.logo}" alt="Logo">
+		<img class="p-8 max-w-sm mx-auto" src="logo.png" alt="Logo">
 		<div>Sign Up For {group.name}</div>
 		<div>{group.description}</div>
 

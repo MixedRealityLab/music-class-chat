@@ -23,7 +23,6 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
     }
     dbuser.group.site = {
       _id: dbsite._id,
-      logo: dbsite.logo
     }
     const uuser: UUser = {
       _id: dbuser._id,

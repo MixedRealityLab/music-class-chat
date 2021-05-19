@@ -48,9 +48,7 @@
 </script>
 
 <form class="p-4 flex flex-col items-center" on:submit|preventDefault={handleSubmit}>
-	{#if site.logo}
-		<img class="px-4 pb-8 max-w-sm" src="{site.logo}" alt="Logo">
-	{/if}
+	<img class="px-4 pb-8 max-w-sm" src="logo.png" alt="Logo">
 	<label class="block">
 		<span>Admin Email</span>
 		<input disabled={working} class="mt-1 block w-full" required type="email" name="email"

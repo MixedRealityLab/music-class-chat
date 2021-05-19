@@ -5,7 +5,6 @@ export const idAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0
 // Site / organisation - User view
 export interface USite {
 	_id: string;
-	logo: string;
 	// TODO: CSS, etc.
 }
 

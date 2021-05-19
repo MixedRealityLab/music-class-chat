@@ -32,7 +32,6 @@ export async function get(req: ServerRequest, res: SapperResponse, next: () => v
       allowguest: dbgroup.allowguest,
       site: {
         _id: dbgroup.sid,
-        logo: dbsite.logo,
       },
     };
     //console.log('group', ugrop);

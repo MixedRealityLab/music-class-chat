@@ -14,8 +14,7 @@ export async function get(req: ServerRequest, res: Response) {
 
 		const dbsite = await req.app.locals.db.collection('Sites').findOne({_id: sid}) as DBSite
 		const usite: USite = {
-			_id: sid,
-			logo: dbsite.logo
+			_id: sid
 		}
 		res.json(usite)
 	} catch (error) {

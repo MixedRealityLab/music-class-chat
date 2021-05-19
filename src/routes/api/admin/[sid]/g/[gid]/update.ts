@@ -1,4 +1,5 @@
 import type {Response} from 'express'
+import type {Db} from "mongodb";
 import * as xlsx from 'xlsx'
 import type {ServerRequest} from '../../../../../../_servertypes'
 import type {DBGroup} from "../../../../../../_types"
@@ -27,19 +28,7 @@ export async function post(req: ServerRequest, res: Response) {
 			return;
 		}
 		//console.log(`update group ${sid}/${gid} with file ${file.name} (${file.mimetype}, ${file.size} bytes)`);
-		const wb = xlsx.read(file.data, {});
-		const group = readGroup(wb, sid, gid);
-		//console.log(`group`, group);
-		const chatdefs = readChatDefs(wb, group);
-		//console.log(`chatdefs`, chatdefs);
-		// find existing chatdefs
-		const oldcds = await req.app.locals.db.collection('ChatDefs').find({groupid: group._id})
-			.toArray() as ChatDef[];
-		console.log(`found ${oldcds.length} old ChatDefs for group ${group._id}`);
-
-		await req.app.locals.db.collection('Groups').replaceOne({_id: group._id}, group);
-		await req.app.locals.db.collection('ChatDefs').deleteMany({groupid: group._id});
-		await req.app.locals.db.collection('ChatDefs').insertMany(chatdefs);
+		await readXlsx(sid, gid, file.data, req.app.locals.db)
 		res.json({});
 	} catch (error) {
 		console.log('Error (update group)', error);
@@ -50,6 +39,39 @@ export async function post(req: ServerRequest, res: Response) {
 const SUMMARY = "Summary";
 const REWARDS = "Rewards";
 const CHATS = "Chats";
+
+export async function readXlsx(sid: string, gid: string, fileData: Buffer, db: Db): Promise<DBGroup> {
+	const wb = xlsx.read(fileData, {});
+	const group = readGroup(wb, sid, gid);
+	//console.log(`group`, group);
+	let requiredRewards = {}
+	let declaredRewards = {}
+	const chatdefs = readChatDefs(wb, group, requiredRewards, declaredRewards)
+
+	for (const requiredReward in requiredRewards) {
+		if (!(requiredReward in declaredRewards)) {
+			const location = requiredRewards[requiredReward]
+			throw `Reward ${requiredReward} not declared. Used at ${location.column}, row ${location.row} in ${location.sheet}`
+		}
+	}
+
+	for (const declaredReward in declaredRewards) {
+		const reward = group.rewards.find((reward) => reward._id == declaredReward)
+		if (reward == null) {
+			group.rewards.push({
+				_id: declaredReward
+			})
+		}
+	}
+
+	const oldcds = await db.collection('ChatDefs').countDocuments({groupid: group._id})
+	console.log(`found ${oldcds} old ChatDefs for group ${group._id}`);
+
+	await db.collection('Groups').replaceOne({_id: group._id}, group);
+	await db.collection('ChatDefs').deleteMany({groupid: group._id});
+	await db.collection('ChatDefs').insertMany(chatdefs);
+	return group
+}
 
 // excel cell name from column,row (start from 0)
 function cellid(c: number, r: number): string {
@@ -64,9 +86,16 @@ function cellid(c: number, r: number): string {
 	return p
 }
 
+interface Location {
+	sheet: string,
+	row: number,
+	column: string
+}
+
 interface Row {
 	[propName: string]: string
 }
+
 
 // generic spreadsheet sheet type
 interface Sheet {
@@ -135,7 +164,7 @@ function asBoolean(value: string): boolean {
 		value.toLowerCase().charAt(0) == 't');
 }
 
-export function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
+function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
 	//console.log(`readGroup...`);
 	const summarysheet = wb.Sheets[SUMMARY];
 	if (!summarysheet)
@@ -181,39 +210,57 @@ export function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup 
 const SORTORDER = "sortorder";
 const IFALL = "ifall";
 const ANDNOT = "andnot";
-const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, SORTORDER, IFALL, ANDNOT];
+const PRIMARYCOLOUR = "primaryColour";
+const SECONDARYCOLOUR = "secondaryColour";
 
-function splitRewards(value: string, group: DBGroup): string[] {
-	if (!value)
-		return [];
-	const rs = value.split(new RegExp("[, \t;]"));
-	for (let r of rs) {
-		if (!group.rewards.find(rw => rw._id == r))
-			throw `Found unknown reward ${r}`;
+const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, PRIMARYCOLOUR, SECONDARYCOLOUR, SORTORDER, IFALL, ANDNOT];
+
+function splitRewards(value: string, location: Location, rewardList): string[] {
+	if (!value) {
+		return []
 	}
-	return rs;
+	const rewards = value.split(new RegExp("[, \t;]")).filter((reward) => reward !== '').map((reward) => {
+		let result = reward.trim().toLowerCase()
+		if (result.indexOf(':') > 0) {
+			return result
+		} else {
+			return location.sheet.toLowerCase() + ":" + result
+		}
+	})
+	for (const reward of rewards) {
+		if (!(reward in rewardList)) {
+			rewardList[reward] = location
+		}
+	}
+	console.log(value)
+	console.log(rewards)
+	console.log(location)
+	return rewards;
 }
 
-export function readChatDefs(wb: xlsx.WorkBook, group: DBGroup): ChatDef[] {
+function readChatDefs(wb: xlsx.WorkBook, group: DBGroup, requiredRewards, declaredRewards): ChatDef[] {
 	let cds: ChatDef[] = [];
 	const sheet = wb.Sheets[CHATS];
 	if (!sheet)
 		throw 'Could not find Chats sheet';
 	const chats = readSheet(sheet);
 	if (!includesAll(CHATS_HEADINGS, chats.headings))
-		throw `Chats sheet is missing heading(s); found ${chats.headings}`;
+		throw `Chats sheet is missing heading(s); found ${chats.headings}, expected ${CHATS_HEADINGS}`;
 	for (let r of chats.rows) {
+		const rowNumber = chats.rows.indexOf(r)
 		cds.push({
 			id: r[_ID],
 			_id: `${group._id}/${r[_ID]}`,
 			groupid: group._id,
-			ifall: splitRewards(r[IFALL], group),
-			andnot: splitRewards(r[ANDNOT], group),
+			ifall: splitRewards(r[IFALL], {sheet: CHATS, row: rowNumber, column: IFALL}, requiredRewards),
+			andnot: splitRewards(r[ANDNOT], {sheet: CHATS, row: rowNumber, column: ANDNOT}, requiredRewards),
 			sortorder: r[SORTORDER] ? Number(r[SORTORDER]) : 0,
 			name: r[NAME],
 			description: r[DESCRIPTION],
 			icon: r[ICON],
-			messages: readMessageDefs(wb, r[_ID], group),
+			primaryColour: r[PRIMARYCOLOUR],
+			secondaryColour: r[SECONDARYCOLOUR],
+			messages: readMessageDefs(wb, r[_ID], group, requiredRewards, declaredRewards),
 		});
 	}
 	return cds;
@@ -236,7 +283,7 @@ const CHAT_HEADINGS = [LABEL, IFALL, ANDNOT, AFTER, WAITFOR, ORNEXT,
 	MESSAGE, TYPE, URL, TITLE, DESCRIPTION, SECTION, SORTORDER,
 	HIDDEN, _REWARDS, RESET, JUMPTO];
 
-function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup): MessageDef[] {
+function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup, requiredRewards, declaredRewards): MessageDef[] {
 	let mds: MessageDef[] = []
 	const sheet = wb.Sheets[id];
 	if (!sheet)
@@ -245,10 +292,11 @@ function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup): Message
 	if (!includesAll(CHAT_HEADINGS, messages.headings))
 		throw `Chat ${id} sheet is missing heading(s); found ${messages.headings} vs ${CHAT_HEADINGS}`;
 	for (let r of messages.rows) {
+		const rowNumber = messages.rows.indexOf(r)
 		mds.push({
 			label: r[LABEL],
-			ifall: splitRewards(r[IFALL], group),
-			andnot: splitRewards(r[ANDNOT], group),
+			ifall: splitRewards(r[IFALL], {sheet: id, row: rowNumber, column: IFALL}, requiredRewards),
+			andnot: splitRewards(r[ANDNOT], {sheet: id, row: rowNumber, column: IFALL}, requiredRewards),
 			after: r[AFTER] ? Number(r[AFTER]) : null,
 			waitfor: r[WAITFOR],
 			ornext: asBoolean(r[ORNEXT]),
@@ -263,8 +311,8 @@ function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup): Message
 				url: r[URL],
 				hidden: asBoolean(r[HIDDEN]),
 			} : null,
-			rewards: splitRewards(r[_REWARDS], group),
-			reset: splitRewards(r[RESET], group),
+			rewards: splitRewards(r[_REWARDS], {sheet: id, row: rowNumber, column: IFALL}, declaredRewards),
+			reset: splitRewards(r[RESET], {sheet: id, row: rowNumber, column: IFALL}, requiredRewards),
 			jumpto: r[JUMPTO],
 		});
 		//console.log(`sortorder = ${r[SORTORDER]}`);

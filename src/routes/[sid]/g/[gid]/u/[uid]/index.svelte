@@ -37,9 +37,7 @@
 	{:else}
 
 		<div class="flex flex-col max-w-3xl mx-auto">
-			{#if user.group.site.logo}
-				<img class="px-4 pb-8 max-w-sm self-center" src="{user.group.site.logo}" alt="Logo">
-			{/if}
+			<img class="px-4 pb-8 max-w-xs self-center" src="logo.png" alt="Logo">
 			{#each user.chats.sort((a, b) => a.chatdef.sortorder - b.chatdef.sortorder) as uc}
 				{#if uc.enabled}
 					<a href="{user.group.site._id}/g/{user.group.id}/u/{user.usercode}/c/{uc.chatdef.id}/"

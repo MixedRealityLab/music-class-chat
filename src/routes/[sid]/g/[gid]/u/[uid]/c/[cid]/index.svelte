@@ -257,9 +257,7 @@
 </style>
 
 <AppBar backpage="{backurl}">
-	{#if user.group.site.logo}
-		<img class="px-4 h-16 pb-8" src="{user.group.site.logo}" alt="Logo">
-	{/if}
+	<img class="px-4 h-16 pb-8" src="logo.png" alt="Logo">
 </AppBar>
 <div class="pt-20 px-2 max-w-3xl mx-auto">
 

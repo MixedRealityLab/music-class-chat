@@ -1,9 +1,8 @@
 import type {Response} from 'express'
-import * as xlsx from 'xlsx'
 import type {ServerRequest} from '../../../../_servertypes'
-import type {ChatDef, DBGroup} from "../../../../_types"
+import type {DBGroup} from "../../../../_types"
 import {isValidAdminSession} from "../_session"
-import {readChatDefs, readGroup} from "./g/[gid]/update";
+import {readXlsx} from "./g/[gid]/update";
 
 export async function post(req: ServerRequest, res: Response) {
 	try {
@@ -38,19 +37,7 @@ export async function post(req: ServerRequest, res: Response) {
 		}
 		await req.app.locals.db.collection<DBGroup>('Groups').insertOne(dbgroup)
 
-		const wb = xlsx.read(file.data, {});
-		const group = readGroup(wb, sid, gid);
-		//console.log(`group`, group);
-		const chatdefs = readChatDefs(wb, group);
-		//console.log(`chatdefs`, chatdefs);
-		// find existing chatdefs
-		const oldcds = await req.app.locals.db.collection('ChatDefs').find({groupid: group._id})
-			.toArray() as ChatDef[];
-		console.log(`found ${oldcds.length} old ChatDefs for group ${group._id}`);
-
-		await req.app.locals.db.collection('Groups').replaceOne({_id: group._id}, group);
-		await req.app.locals.db.collection('ChatDefs').deleteMany({groupid: group._id});
-		await req.app.locals.db.collection('ChatDefs').insertMany(chatdefs);
+		await readXlsx(sid, gid, file.data, req.app.locals.db)
 		const groups = await req.app.locals.db.collection<DBGroup>('Groups').find({sid: sid}).toArray()
 		res.json({groups});
 	} catch (error) {
