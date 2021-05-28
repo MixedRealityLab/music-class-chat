@@ -65,7 +65,6 @@ async function createNewUser(group: DBGroup, signup: SignupRequest,
 			description: group.description,
 			site: {
 				_id: group.sid,
-				logo: ''
 				// CSS, etc?
 			},
 		},

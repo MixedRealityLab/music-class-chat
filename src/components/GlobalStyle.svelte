@@ -17,22 +17,21 @@
             background: url("../backdrop.jpg") fixed;
         }
 
-        a, button {
-            transition: filter 0.5s, opacity 1s, background-color 1s;
-	        background: #FFF0;
-	        border-radius: 1rem;
+        a, button, input[type='submit'] {
+            @apply rounded-2xl;
+            transition: filter 0.5s, opacity 0.5s, background-color 0.5s;
+            background: #FFF0;
         }
 
         input:disabled, button:disabled {
             opacity: 0.5;
         }
 
-        a:hover, button:hover:enabled {
+        a:hover, button:hover:enabled, input[type='submit']:hover:enabled {
             filter: brightness(120%);
             -webkit-filter: brightness(120%);
-	        background: #fff2;
+            background: #fff2;
         }
-
 
         input {
             color: #111;

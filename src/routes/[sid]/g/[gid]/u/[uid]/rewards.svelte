@@ -27,7 +27,6 @@
 	export let user: t.UUser;
 </script>
 
-
 <AppBar title="{user ? user.group.name : 'Error'}">
 	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="rewards"/>
 </AppBar>

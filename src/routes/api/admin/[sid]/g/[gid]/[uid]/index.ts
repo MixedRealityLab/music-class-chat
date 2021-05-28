@@ -18,7 +18,6 @@ export async function get(req: ServerRequest, res: Response) {
 			{_id: `${sid}/${gid}/${uid}`}
 		)
 		delete user.group
-		delete user.groupid
 		delete user.chats
 		delete user.pin
 		delete user.content

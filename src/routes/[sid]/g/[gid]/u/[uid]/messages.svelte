@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import type {Preload} from "@sapper/common";
-	import type {GenericResponse} from "../../../../../../_types";
+	import type {GenericResponse, UUser} from "../../../../../../_types";
 
 	export const preload: Preload = async function (this, page, session) {
 		const {sid, gid, uid} = page.params;
@@ -12,7 +12,7 @@
 		if (data.error) {
 			return {error: data.error};
 		} else {
-			return {user: data as t.UUser};
+			return {user: data as UUser};
 		}
 	}
 </script>
@@ -31,13 +31,24 @@
 <AppBar title="{user ? user.group.name : 'Error'}">
 	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="settings"/>
 </AppBar>
-<div class="px-2 pt-2">
+<div class="px-2 pt-20">
 	{#if error}
 		<p>ERROR: {error}</p>
 	{:else}
-
-		<p class="text-lg pt-2">Group: {user.group.name}</p>
-		<p>{user.group.description}</p>
-
+		<div class="max-w-3xl mx-auto flex flex-col">
+			{#if user.messages}
+				{#each user.messages as message}
+					{#if message.fromUser}
+						<div class="mb-6 mt-2 block py-2 px-6 flex rounded-2xl text-gray-300">
+							{message.text}
+						</div>
+					{:else}
+						<div>
+							{message.text}
+						</div>
+					{/if}
+				{/each}
+			{/if}
+		</div>
 	{/if}
 </div>

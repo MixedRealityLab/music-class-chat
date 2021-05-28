@@ -15,6 +15,7 @@ let FileStore = (SessionFileStore)(session)
 let fileStoreOptions = {}
 
 console.log(`base path: ${BASEPATH}`)
+app.use(`${BASEPATH}/uploads`, express.static('uploads'))
 app.use(
 	BASEPATH,
 	express.static('static'),

@@ -1,29 +1,25 @@
-import type * as sapper from '@sapper/server';
-import type {Db} from 'mongodb';
+import type * as sapper from '@sapper/server'
+import type {UploadedFile} from "express-fileupload"
+import type {Db} from 'mongodb'
 
 interface App {
-  locals: AppLocals;
+	locals: AppLocals
 }
 
 interface AppLocals {
-  db: Db;
-}
-
-// for express-fileupload
-interface UploadedFile extends File {
-  mimetype: string;
-  data?:Buffer;
+	db: Db
 }
 
 interface MyFiles {
-  spreadsheet?: UploadedFile;
+	spreadsheet?: UploadedFile
+	files?: UploadedFile | UploadedFile[]
 }
 
 export interface ServerRequest extends sapper.SapperRequest {
-  session: any;
-  app: App;
-  files: MyFiles;
-  body?: any;
-  protocol: string
-  hostname: string
+	session: any
+	app: App
+	files: MyFiles
+	body?: any
+	protocol: string
+	hostname: string
 }

@@ -1,5 +1,5 @@
 import type {Response} from 'express'
-import type {Db} from "mongodb";
+import type {Db} from "mongodb"
 import * as xlsx from 'xlsx'
 import type {ServerRequest} from '../../../../../../_servertypes'
 import type {DBGroup} from "../../../../../../_types"
@@ -13,7 +13,7 @@ export async function post(req: ServerRequest, res: Response) {
 
 		if (!sid || !gid || !file) {
 			res.status(400).json({error: 'Bad Request'})
-			return;
+			return
 		}
 
 		if (!await isValidAdminSession(req)) {
@@ -25,25 +25,25 @@ export async function post(req: ServerRequest, res: Response) {
 		)
 		if (!dbgroup) {
 			res.status(404).json({error: 'Not Found'})
-			return;
+			return
 		}
-		//console.log(`update group ${sid}/${gid} with file ${file.name} (${file.mimetype}, ${file.size} bytes)`);
+		//console.log(`update group ${sid}/${gid} with file ${file.name} (${file.mimetype}, ${file.size} bytes)`)
 		await readXlsx(sid, gid, file.data, req.app.locals.db)
-		res.json({});
+		res.json({})
 	} catch (error) {
-		console.log('Error (update group)', error);
+		console.log('Error (update group)', error)
 		res.status(500).json({error: error})
 	}
 }
 
-const SUMMARY = "Summary";
-const REWARDS = "Rewards";
-const CHATS = "Chats";
+const SUMMARY = "Summary"
+const REWARDS = "Rewards"
+const CHATS = "Chats"
 
 export async function readXlsx(sid: string, gid: string, fileData: Buffer, db: Db): Promise<DBGroup> {
-	const wb = xlsx.read(fileData, {});
-	const group = readGroup(wb, sid, gid);
-	//console.log(`group`, group);
+	const wb = xlsx.read(fileData, {})
+	const group = readGroup(wb, sid, gid)
+	//console.log(`group`, group)
 	let requiredRewards = {}
 	let declaredRewards = {}
 	const chatdefs = readChatDefs(wb, group, requiredRewards, declaredRewards)
@@ -65,11 +65,11 @@ export async function readXlsx(sid: string, gid: string, fileData: Buffer, db: D
 	}
 
 	const oldcds = await db.collection('ChatDefs').countDocuments({groupid: group._id})
-	console.log(`found ${oldcds} old ChatDefs for group ${group._id}`);
+	console.log(`found ${oldcds} old ChatDefs for group ${group._id}`)
 
-	await db.collection('Groups').replaceOne({_id: group._id}, group);
-	await db.collection('ChatDefs').deleteMany({groupid: group._id});
-	await db.collection('ChatDefs').insertMany(chatdefs);
+	await db.collection('Groups').replaceOne({_id: group._id}, group)
+	await db.collection('ChatDefs').deleteMany({groupid: group._id})
+	await db.collection('ChatDefs').insertMany(chatdefs)
 	return group
 }
 
@@ -133,47 +133,47 @@ function readSheet(sheet: xlsx.WorkSheet): Sheet {
 	return {headings: headings, rows: rows}
 }
 
-const NAME = "name";
-const _ID = "_id";
-const DESCRIPTION = "description";
-const SHOWPUBLIC = "showpublic";
-const REQUIREINITIALS = "requireinitials";
-const REQUIREPIN = "requirepin";
-const REQUIREEMAIL = "requireemail";
-const ALLOWSELFENROL = "allowselfenrol";
-const ALLOWGUEST = "allowguest";
+const NAME = "name"
+const _ID = "_id"
+const DESCRIPTION = "description"
+const SHOWPUBLIC = "showpublic"
+const REQUIREINITIALS = "requireinitials"
+const REQUIREPIN = "requirepin"
+const REQUIREEMAIL = "requireemail"
+const ALLOWSELFENROL = "allowselfenrol"
+const ALLOWGUEST = "allowguest"
 const PASSWORD = "password"
 const SUMMARY_HEADINGS = [NAME, _ID, DESCRIPTION, SHOWPUBLIC,
 	REQUIREINITIALS, REQUIREPIN, REQUIREEMAIL, ALLOWSELFENROL,
-	ALLOWGUEST, PASSWORD];
-const ICON = "icon";
-const NOICON = "noicon";
-const COMMENT = "comment";
-const REWARDS_HEADINGS = [_ID, ICON, NOICON, COMMENT];
+	ALLOWGUEST, PASSWORD]
+const ICON = "icon"
+const NOICON = "noicon"
+const COMMENT = "comment"
+const REWARDS_HEADINGS = [_ID, ICON, NOICON, COMMENT]
 
 function includesAll(a: string[], inb: string[]): boolean {
 	for (let s of a) {
 		if (inb.indexOf(s) < 0)
-			return false;
+			return false
 	}
-	return true;
+	return true
 }
 
 function asBoolean(value: string): boolean {
 	return value && value.length > 0 && (value.toLowerCase().charAt(0) == 'y' ||
-		value.toLowerCase().charAt(0) == 't');
+		value.toLowerCase().charAt(0) == 't')
 }
 
 function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
-	//console.log(`readGroup...`);
-	const summarysheet = wb.Sheets[SUMMARY];
+	//console.log(`readGroup...`)
+	const summarysheet = wb.Sheets[SUMMARY]
 	if (!summarysheet)
-		throw 'Could not find Summary sheet';
-	const summary = readSheet(summarysheet);
+		throw 'Could not find Summary sheet'
+	const summary = readSheet(summarysheet)
 	if (summary.rows.length != 1)
-		throw `Summary sheet should have 1 row; found ${summary.rows.length}`;
+		throw `Summary sheet should have 1 row; found ${summary.rows.length}`
 	if (!includesAll(SUMMARY_HEADINGS, summary.headings))
-		throw `Summary sheet is missing heading(s); found ${summary.headings}`;
+		throw `Summary sheet is missing heading(s); found ${summary.headings}`
 	let group: DBGroup = {
 		id: gid,
 		_id: `${sid}/${gid}`,
@@ -188,64 +188,58 @@ function readGroup(wb: xlsx.WorkBook, sid: string, gid: string): DBGroup {
 		password: summary.rows[0][PASSWORD],
 		rewards: [], //later
 		sid: sid,
-	};
+	}
 	// rewards
-	const rewardssheet = wb.Sheets[REWARDS];
+	const rewardssheet = wb.Sheets[REWARDS]
 	if (!rewardssheet)
-		throw 'Could not find Rewards sheet';
-	const rewards = readSheet(rewardssheet);
+		throw 'Could not find Rewards sheet'
+	const rewards = readSheet(rewardssheet)
 	if (!includesAll(REWARDS_HEADINGS, rewards.headings))
-		throw `Rewards sheet is missing heading(s); found ${rewards.headings}`;
+		throw `Rewards sheet is missing heading(s); found ${rewards.headings}`
 	for (let r of rewards.rows) {
 		group.rewards.push({
 			_id: r[_ID],
 			icon: r[ICON],
 			noicon: r[NOICON],
 			comment: r[COMMENT],
-		});
+		})
 	}
-	return group;
+	return group
 }
 
-const SORTORDER = "sortorder";
-const IFALL = "ifall";
-const ANDNOT = "andnot";
-const PRIMARYCOLOUR = "primaryColour";
-const SECONDARYCOLOUR = "secondaryColour";
+const SORTORDER = "sortorder"
+const IFALL = "ifall"
+const ANDNOT = "andnot"
+const PRIMARYCOLOUR = "primaryColour"
+const SECONDARYCOLOUR = "secondaryColour"
 
-const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, PRIMARYCOLOUR, SECONDARYCOLOUR, SORTORDER, IFALL, ANDNOT];
+const CHATS_HEADINGS = [NAME, _ID, DESCRIPTION, ICON, PRIMARYCOLOUR, SECONDARYCOLOUR, SORTORDER, IFALL, ANDNOT]
 
 function splitRewards(value: string, location: Location, rewardList): string[] {
 	if (!value) {
 		return []
 	}
-	const rewards = value.split(new RegExp("[, \t;]")).filter((reward) => reward !== '').map((reward) => {
-		let result = reward.trim().toLowerCase()
-		if (result.indexOf(':') > 0) {
-			return result
-		} else {
-			return location.sheet.toLowerCase() + ":" + result
-		}
-	})
-	for (const reward of rewards) {
+	const rewards = value
+		.toLowerCase()
+		.split(new RegExp("[,\h;]+"))
+		.filter((reward) => reward !== '')
+		.map((reward) => reward.indexOf(':') > 0 ? reward : location.sheet.toLowerCase() + ":" + reward)
+	rewards.forEach((reward) => {
 		if (!(reward in rewardList)) {
 			rewardList[reward] = location
 		}
-	}
-	console.log(value)
-	console.log(rewards)
-	console.log(location)
-	return rewards;
+	})
+	return rewards
 }
 
 function readChatDefs(wb: xlsx.WorkBook, group: DBGroup, requiredRewards, declaredRewards): ChatDef[] {
-	let cds: ChatDef[] = [];
-	const sheet = wb.Sheets[CHATS];
+	let cds: ChatDef[] = []
+	const sheet = wb.Sheets[CHATS]
 	if (!sheet)
-		throw 'Could not find Chats sheet';
-	const chats = readSheet(sheet);
+		throw 'Could not find Chats sheet'
+	const chats = readSheet(sheet)
 	if (!includesAll(CHATS_HEADINGS, chats.headings))
-		throw `Chats sheet is missing heading(s); found ${chats.headings}, expected ${CHATS_HEADINGS}`;
+		throw `Chats sheet is missing heading(s) found ${chats.headings}, expected ${CHATS_HEADINGS}`
 	for (let r of chats.rows) {
 		const rowNumber = chats.rows.indexOf(r)
 		cds.push({
@@ -261,36 +255,36 @@ function readChatDefs(wb: xlsx.WorkBook, group: DBGroup, requiredRewards, declar
 			primaryColour: r[PRIMARYCOLOUR],
 			secondaryColour: r[SECONDARYCOLOUR],
 			messages: readMessageDefs(wb, r[_ID], group, requiredRewards, declaredRewards),
-		});
+		})
 	}
-	return cds;
+	return cds
 }
 
-const LABEL = "label";
-const AFTER = "after";
-const WAITFOR = "waitfor";
-const ORNEXT = "ornext";
-const MESSAGE = "message";
-const TYPE = "type";
-const URL = "url";
-const TITLE = "title";
-const SECTION = "section";
-const HIDDEN = "hidden";
-const _REWARDS = "rewards";
-const RESET = "reset";
-const JUMPTO = "jumpto";
+const LABEL = "label"
+const AFTER = "after"
+const WAITFOR = "waitfor"
+const ORNEXT = "ornext"
+const MESSAGE = "message"
+const TYPE = "type"
+const URL = "url"
+const TITLE = "title"
+const SECTION = "section"
+const HIDDEN = "hidden"
+const _REWARDS = "rewards"
+const RESET = "reset"
+const JUMPTO = "jumpto"
 const CHAT_HEADINGS = [LABEL, IFALL, ANDNOT, AFTER, WAITFOR, ORNEXT,
 	MESSAGE, TYPE, URL, TITLE, DESCRIPTION, SECTION, SORTORDER,
-	HIDDEN, _REWARDS, RESET, JUMPTO];
+	HIDDEN, _REWARDS, RESET, JUMPTO]
 
 function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup, requiredRewards, declaredRewards): MessageDef[] {
 	let mds: MessageDef[] = []
-	const sheet = wb.Sheets[id];
+	const sheet = wb.Sheets[id]
 	if (!sheet)
-		throw `Could not find Chat ${id} sheet`;
-	const messages = readSheet(sheet);
+		throw `Could not find Chat ${id} sheet`
+	const messages = readSheet(sheet)
 	if (!includesAll(CHAT_HEADINGS, messages.headings))
-		throw `Chat ${id} sheet is missing heading(s); found ${messages.headings} vs ${CHAT_HEADINGS}`;
+		throw `Chat ${id} sheet is missing heading(s); found ${messages.headings} vs ${CHAT_HEADINGS}`
 	for (let r of messages.rows) {
 		const rowNumber = messages.rows.indexOf(r)
 		mds.push({
@@ -314,25 +308,25 @@ function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup, required
 			rewards: splitRewards(r[_REWARDS], {sheet: id, row: rowNumber, column: IFALL}, declaredRewards),
 			reset: splitRewards(r[RESET], {sheet: id, row: rowNumber, column: IFALL}, requiredRewards),
 			jumpto: r[JUMPTO],
-		});
-		//console.log(`sortorder = ${r[SORTORDER]}`);
+		})
+		//console.log(`sortorder = ${r[SORTORDER]}`)
 	}
-	return mds;
+	return mds
 }
 
 function getContentType(value: string): ContentType {
 	if (!value)
-		return ContentType.unspecified;
-	const v = value.toLowerCase();
+		return ContentType.unspecified
+	const v = value.toLowerCase()
 	if (v == 'image')
-		return ContentType.image;
+		return ContentType.image
 	else if (v == 'youtube')
-		return ContentType.youtube;
+		return ContentType.youtube
 	else if (v == 'mp3')
-		return ContentType.mp3;
+		return ContentType.mp3
 	else if (v == 'document')
-		return ContentType.document;
+		return ContentType.document
 	else if (v == 'website')
-		return ContentType.website;
-	throw `Unknown message content type, ${value}`;
+		return ContentType.website
+	throw `Unknown message content type, ${value}`
 }

@@ -66,7 +66,7 @@
 	}
 </script>
 
-<div class="p-4 flex flex-col items-center">
+<div class="p-4 flex flex-col items-center max-w-3xl mx-auto">
 	<h1>Groups</h1>
 
 	{#each groups as group}

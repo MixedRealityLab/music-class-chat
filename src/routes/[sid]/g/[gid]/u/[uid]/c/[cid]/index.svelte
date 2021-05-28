@@ -31,7 +31,7 @@
 	import Content from '../../../../../../../../components/Content.svelte'
 	import {stores} from '@sapper/app'
 	import {onDestroy, onMount, beforeUpdate, afterUpdate} from 'svelte'
-	import {getNextStep, isEnabled} from '../../../../../../../../_logic'
+	import {getNextStep, isFreeTextInput, isEnabled} from '../../../../../../../../_logic'
 
 	import type {
 		AddUserMessageRequest,
@@ -67,7 +67,7 @@
 	})
 
 	afterUpdate(() => {
-		if(autoscroll) {
+		if (autoscroll) {
 			document.scrollingElement.scroll({top: document.scrollingElement.scrollHeight, behavior: 'smooth'})
 		}
 	});
@@ -182,22 +182,29 @@
 		}
 	}
 
-	function handleUserInput(userinput: string) {
+	function handleTextInput(event: Event) {
+		const value = event.target.value
+		if (value.trim() != '') {
+			handleUserInput(value)
+		}
+	}
+
+	function handleUserInput(userInput: string) {
 		if (timer) {
 			clearTimeout(timer);
 			timer = null;
 		}
-		let umsg: UserMessage = {
-			userinput: userinput,
+		const userMessage: UserMessage = {
+			userinput: userInput,
 			date: new Date().toISOString(),
 		}
 		// patch client
-		userchat.messages.push(umsg);
+		userchat.messages.push(userMessage);
 		messages = userchat.messages;
 		waitfor = [];
 		// update server
 		// TODO waiting ?
-		updateServer(umsg, [], [], userchat.nextix, false);
+		updateServer(userMessage, [], [], userchat.nextix, false);
 
 		timer = setTimeout(checkMessages, checkFreq);
 	}
@@ -257,7 +264,9 @@
 </style>
 
 <AppBar backpage="{backurl}">
-	<img class="px-4 h-16 pb-8" src="logo.png" alt="Logo">
+	<div class="flex flex-1 justify-center items-center">
+		<img class="p-4 h-16 mr-16" src="logo.png" alt="Logo">
+	</div>
 </AppBar>
 <div class="pt-20 px-2 max-w-3xl mx-auto">
 
@@ -300,11 +309,16 @@
 			{#if waitfor && waitfor.length > 0 }
 				<div class="flex flex-col items-center px-4 pb-6">
 					{#each waitfor as userinput}
-						<button class="my-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
-						        on:click={handleUserInput(userinput)}
-						        style="{userchat.chatdef.primaryColour != null && userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
-							{userinput}
-						</button>
+						{#if isFreeTextInput(userinput)}
+							<input type="text" placeholder="{userinput.substring(1, userinput.length - 1)}"
+							       on:change={handleTextInput}/>
+						{:else}
+							<button class="my-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
+							        on:click={handleUserInput(userinput)}
+							        style="{userchat.chatdef.primaryColour != null && userchat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + userchat.chatdef.primaryColour + ',' + userchat.chatdef.secondaryColour + ')' : 'background: ' + userchat.chatdef.primaryColour}">
+								{userinput}
+							</button>
+						{/if}
 					{/each}
 				</div>
 			{/if}

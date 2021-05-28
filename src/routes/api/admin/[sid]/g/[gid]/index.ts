@@ -1,6 +1,6 @@
 import type {Response} from "express";
 import type {ServerRequest} from "../../../../../../_servertypes";
-import type {DBUser} from "../../../../../../_types";
+import type {AFile, DBUser} from "../../../../../../_types";
 import {isValidAdminSession} from "../../../_session";
 
 export async function get(req: ServerRequest, res: Response) {
@@ -14,9 +14,8 @@ export async function get(req: ServerRequest, res: Response) {
 		if (!await isValidAdminSession(req)) {
 			res.status(401).json({error: 'Unauthorized'})
 		}
-		const users = await req.app.locals.db.collection<DBUser>('Users').find(
-			{groupid: `${sid}/${gid}`}
-		).toArray()
+		const groupid = `${sid}/${gid}`
+		const users = await req.app.locals.db.collection<DBUser>('Users').find({groupid: groupid}).toArray()
 		users.forEach(user => {
 			delete user.group
 			delete user.groupid
@@ -25,7 +24,8 @@ export async function get(req: ServerRequest, res: Response) {
 			delete user.pin
 			delete user.content
 		})
-		return res.json(users)
+		const files = await req.app.locals.db.collection<AFile>('Files').find().toArray()
+		return res.json({users: users, files: files})
 	} catch (error) {
 		console.log('Error (update group)', error);
 		res.status(500).json({error: error})

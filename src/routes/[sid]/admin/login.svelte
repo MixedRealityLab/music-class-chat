@@ -1,24 +1,5 @@
-<script context="module" lang="ts">
-	import type {Preload} from "@sapper/common";
-	import type {USite} from "../../../_types";
-
-	export const preload: Preload = async function (this, page, session) {
-		const {sid} = page.params
-		const res = await this.fetch(`api/user/${sid}`)
-		if (res.status !== 200) {
-			return {error: `Sorry, there was a problem (${res.status})`}
-		}
-		const site = await res.json() as USite
-		return {site}
-	}
-</script>
-
 <script type="ts">
 	import {stores} from '@sapper/app'
-	import type {USite} from "../../../_types";
-	import AppBar from "../../../components/AppBar.svelte"
-
-	export let site: USite = null
 
 	const {page} = stores()
 	const {sid} = $page.params
