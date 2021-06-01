@@ -10,6 +10,7 @@ const emailConfigured = 'SMTP.host' in process.env
 const transport = nodemailer.createTransport({
 	host: process.env["SMTP.host"],
 	port: parseInt(process.env["SMTP.port"]),
+	secure: true,
 	auth: {
 		user: process.env["SMTP.user"],
 		pass: process.env["SMTP.pass"]
