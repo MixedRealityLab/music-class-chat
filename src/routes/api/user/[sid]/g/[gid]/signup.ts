@@ -74,6 +74,7 @@ async function createNewUser(group: DBGroup, signup: SignupRequest,
 		created: new Date().toISOString(),
 		initials: signup.initials,
 		pin: signup.pin,
+		messages: [],
 		lastmodified: now,
 	};
 	// chats
