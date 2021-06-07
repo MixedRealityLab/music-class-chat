@@ -40,12 +40,14 @@
 <div class="px-4 pt-24 flex flex-col max-w-3xl mx-auto">
 	<img alt="Logo" class="px-4 pb-8 max-w-xs self-center" src="logo.png">
 
-	<h1>Users</h1>
-	{#if users.length > 0}
+	{#if users && users.length > 0}
+		<h1>Users</h1>
 		<div><a href="/{sid}/admin/{gid}/all">All Users</a></div>
 
+		{#each users as user}
+			<div><a href="/{sid}/admin/{gid}/{user.usercode}">{user.initials}</a></div>
+		{/each}
+	{:else}
+		<h1>No Users</h1>
 	{/if}
-	{#each users as user}
-		<div><a href="/{sid}/admin/{gid}/{user.usercode}">{user.initials}</a></div>
-	{/each}
 </div>

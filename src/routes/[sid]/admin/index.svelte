@@ -93,7 +93,8 @@
 					<input bind:files class="mt-1 block w-full text-white" id="file" required type="file"/>
 				</label>
 
-				<input class="mt-4 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create New Group'>
+				<input class="mt-4 w-full px-4 py-2 block bg-gray-300"
+				       style="background: #1796d8" type='submit' value='Create New Group'>
 			</form>
 		</DialogContent>
 	</DialogOverlay>
