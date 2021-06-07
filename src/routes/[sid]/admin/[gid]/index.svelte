@@ -42,10 +42,10 @@
 
 	{#if users && users.length > 0}
 		<h1>Users</h1>
-		<div><a href="all">All Users</a></div>
+		<div><a href="{sid}/admin/{gid}/all">All Users</a></div>
 
 		{#each users as user}
-			<div><a href="{user.usercode}">{user.initials}</a></div>
+			<div><a href="{sid}/admin/{gid}/{user.usercode}">{user.initials}</a></div>
 		{/each}
 	{:else}
 		<h1>No Users</h1>
