@@ -287,7 +287,9 @@
 				{/if}
 
 				{#if um.content}
-					<Content content="{um.content}"/>
+					<div class="w-full md:w-1/2">
+						<Content content="{um.content}"/>
+					</div>
 				{/if}
 
 				{#if um.message}
@@ -299,8 +301,8 @@
 
 				{#if um.rewardicons}
 					{#each um.rewardicons as icon}
-						<div>
-							<p><img src="{icon}" alt="{icon}"></p>
+						<div class="w-full md:w-1/2">
+							<img src="{icon}" alt="{icon}">
 						</div>
 					{/each}
 				{/if}
