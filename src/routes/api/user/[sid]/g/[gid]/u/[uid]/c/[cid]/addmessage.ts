@@ -63,9 +63,15 @@ export async function post(req: ServerRequest, res: SapperResponse) {
 		await req.app.locals.db.collection<DBUser>('Users').updateOne(
 			{_id: `${sid}/${gid}/${uid}`},
 			{$set: {rewards: rewards, chats: ucs, content: content}})
-		await req.app.locals.db.collection<LogItem>('EventLog').insertOne({
-			timestamp: new Date().getTime(), type: LogType.Chat, uid: dbUser._id
-		})
+		if(addRequest.rewards.length == 0) {
+			await req.app.locals.db.collection<LogItem>('EventLog').insertOne({
+				timestamp: new Date().getTime(), type: LogType.Chat, uid: dbUser._id
+			})
+		} else {
+			await req.app.locals.db.collection<LogItem>('EventLog').insertOne({
+				timestamp: new Date().getTime(), type: LogType.Reward, uid: dbUser._id, content: addRequest.rewards.join(', ')
+			})
+		}
 
 		res.setHeader('Content-Type', 'application/json')
 		res.end(JSON.stringify({}))

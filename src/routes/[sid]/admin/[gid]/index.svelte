@@ -21,7 +21,6 @@
 	}
 </script>
 
-
 <script type="ts">
 	import {stores} from '@sapper/app';
 	import AdminTabs from "../../../../components/AdminTabs.svelte";
@@ -42,6 +41,10 @@
 	<img alt="Logo" class="px-4 pb-8 max-w-xs self-center" src="logo.png">
 
 	<h1>Users</h1>
+	{#if users.length > 0}
+		<div><a href="/{sid}/admin/{gid}/all">All Users</a></div>
+
+	{/if}
 	{#each users as user}
 		<div><a href="/{sid}/admin/{gid}/{user.usercode}">{user.initials}</a></div>
 	{/each}

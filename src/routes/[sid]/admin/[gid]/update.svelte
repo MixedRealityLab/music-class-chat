@@ -41,7 +41,8 @@
 
 <div class="px-4 pt-24 flex flex-col items-start max-w-3xl mx-auto">
 	<h1>Update Group</h1>
-	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}>
+	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}
+	        style="background: #1796d8">
 		<img alt="" class="w-6 mr-2" src="icons/upload.svg"/>
 		Upload Spreadsheet
 	</button>

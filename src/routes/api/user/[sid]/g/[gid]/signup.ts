@@ -111,11 +111,11 @@ async function createNewUser(group: DBGroup, signup: SignupRequest,
 		})
 		// add UserChat
 		await db.collection('UserChats').insertOne(uc)
-		await db.collection<LogItem>('EventLog').insertOne({
-			timestamp: new Date().getTime(), type: LogType.SignUp, uid: user._id
-		})
 	}
 	// add
 	await db.collection('Users').insertOne(user)
+	await db.collection<LogItem>('EventLog').insertOne({
+		timestamp: new Date().getTime(), type: LogType.SignUp, uid: user._id
+	})
 	return user
 }

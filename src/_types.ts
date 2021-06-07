@@ -275,9 +275,10 @@ export interface SendMessageRequest {
 }
 
 export enum LogType {
-	Error,
-	SignUp,
-	Chat
+	Error = 'Error',
+	SignUp = 'SignUp',
+	Chat = 'Chat',
+	Reward = 'Reward'
 }
 
 export interface LogItem {

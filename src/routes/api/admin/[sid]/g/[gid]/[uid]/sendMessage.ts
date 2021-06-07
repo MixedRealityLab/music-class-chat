@@ -19,17 +19,19 @@ export async function post(req: ServerRequest, res: Response) {
 		if (uid === 'all') {
 			const groupid = `${sid}/${gid}`
 			const users = await req.app.locals.db.collection<DBUser>('Users').find({groupid: groupid}).toArray()
-			users.forEach((user) => {
+			const messageItem = {
+				fromUser: false,
+				read: false,
+				text: message,
+				timestamp: new Date().toISOString()
+			}
+			for(const user of users) {
 				if (!user.messages) {
 					user.messages = []
 				}
-				user.messages.push({
-					fromUser: false,
-					read: false,
-					text: message,
-					timestamp: new Date().toISOString()
-				})
-			})
+				user.messages.push(messageItem)
+				await req.app.locals.db.collection<DBUser>('Users').replaceOne({_id: user._id}, user)
+			}
 		} else {
 			const filter = {_id: `${sid}/${gid}/${uid}`}
 			const user = await req.app.locals.db.collection<DBUser>('Users').findOne(

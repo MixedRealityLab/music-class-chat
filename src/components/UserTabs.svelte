@@ -21,7 +21,7 @@
 		<div class="px-3 py-2 cursor-pointer" class:text-blue-400="{page=='resources'}">Resources</div>
 	</a>
 	<a href="{url}/messages" class="relative">
-		<div class="px-3 py-2 cursor-pointer" class:text-blue-400="{page=='settings'}">Notifications</div>
+		<div class="px-3 py-2 cursor-pointer" class:text-blue-400="{page=='messages'}">Messages</div>
 		{#if unread}
 			<div class="pip"></div>
 		{/if}

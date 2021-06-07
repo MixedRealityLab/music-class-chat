@@ -100,7 +100,8 @@
 		</div>
 	{/each}
 
-	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}>
+	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}
+	        style="background: #1796d8">
 		<img alt="" class="w-6 mr-2" src="icons/add.svg"/>
 		Add Files
 	</button>

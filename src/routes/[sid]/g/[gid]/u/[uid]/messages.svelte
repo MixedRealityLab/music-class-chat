@@ -42,7 +42,7 @@
 </script>
 
 <AppBar title="{user ? user.group.name : 'Error'}">
-	<UserTabs page="settings" url="{sid}/g/{gid}/u/{uid}"
+	<UserTabs page="messages" url="{sid}/g/{gid}/u/{uid}"
 	          unread="{user.messages && user.messages.some((message) => !message.read)}"/>
 </AppBar>
 <div class="px-2 pt-20">
@@ -53,7 +53,7 @@
 			{#if user.messages}
 				{#each user.messages as message}
 					<div class="mb-6 mt-2 block py-2 px-6 flex flex-col text-gray-300">
-						<div class:font-bold={!message.read}>
+						<div class:font-bold={!message.read} class="whitespace-pre-line">
 							{message.text}
 						</div>
 						<div class="text-xs">

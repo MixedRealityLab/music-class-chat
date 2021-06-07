@@ -28,7 +28,6 @@ export async function isValidAdminSession(req: ServerRequest): Promise<boolean> 
 		return false
 	}
 
-	console.log(`using admin session for ${session.email}`);
 	const dbSite = await req.app.locals.db.collection<DBSite>('Sites').findOne({_id: sid})
 	if (!dbSite) {
 		return false

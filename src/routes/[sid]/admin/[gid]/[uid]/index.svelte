@@ -47,16 +47,29 @@
 		} else {
 			statusCode = response.status
 		}
+		message = ''
 		working = false
+	}
+
+	async function copyUserLink() {
+		const url = new URL(`${sid}/g/${gid}/u/${uid}`, document.baseURI).href
+		console.log(url)
+		await navigator.clipboard.writeText(url)
+	}
+
+	function isBlank(str) {
+		return (!str || /^\s*$/.test(str))
 	}
 </script>
 
 
 <AppBar backpage="{`${sid}/admin/${gid}`}"><h1>{user ? user.initials : ''}</h1></AppBar>
-<div class="px-2 pt-20 max-w-3xl mx-auto ">
-	<h1>Send Message</h1>
-	<textarea bind:value={message} placeholder="Message"/>
-	<button on:click={sendMessage}>Send</button>
+<div class="px-2 pt-20 max-w-3xl mx-auto flex flex-col">
+	<button on:click={copyUserLink} class="self-start px-4 py-2 my-4" style="background: #1796d8">Copy User Login Link to Clipboard</button>
+
+
+	<textarea bind:value={message} placeholder="Message" class="text-black"></textarea>
+	<button on:click={sendMessage} disabled={isBlank(message) || working} class="self-end px-4 py-2 mt-2" style="background: #1796d8">Send Message</button>
 	<h1>Rewards</h1>
 	<div class="grid grid-cols-3 gap-2">
 		{#each user.rewards as reward}
