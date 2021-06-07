@@ -1,5 +1,6 @@
 import type {Response} from 'express'
 import type {UploadedFile} from "express-fileupload";
+import {mkdirSync} from "fs";
 import type {ServerRequest} from '../../../../../../_servertypes'
 import type {AFile} from "../../../../../../_types";
 import {isValidAdminSession} from "../../../_session"
@@ -17,7 +18,6 @@ export async function post(req: ServerRequest, res: Response) {
 			res.status(401).json({error: 'Unauthorized'})
 		}
 
-		const groupid = `${sid}/${gid}`
 		let fileArray: UploadedFile[]
 		if (Array.isArray(req.files.files)) {
 			fileArray = req.files.files
@@ -26,9 +26,10 @@ export async function post(req: ServerRequest, res: Response) {
 		}
 
 		let fileDocs = []
+		mkdirSync(`uploads/${sid}`, {recursive: true})
 		for (const file of fileArray) {
 			const doc: AFile = {
-				path: `uploads/${file.name}`
+				path: `uploads/${sid}/${file.name}`
 			}
 			await file.mv(`/app/${doc.path}`)
 			fileDocs.push(doc)

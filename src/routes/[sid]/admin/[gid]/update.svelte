@@ -9,15 +9,13 @@
 	let spreadsheet: FileList
 	let fileInput: HTMLInputElement
 	let statusCode: number = null
+	let statusText: string = null
 	let working = false
-
-	if (spreadsheet != null && spreadsheet.length > 0) {
-		submitUpdate()
-	}
 
 	async function submitUpdate() {
 		if (spreadsheet.length > 0) {
-			working = true;
+			working = true
+			statusText = null
 			const formData = new FormData();
 			formData.append("spreadsheet", spreadsheet[0]);
 			console.log(`document.baseURI = ${document.baseURI}`);
@@ -25,8 +23,12 @@
 				method: "POST",
 				body: formData
 			});
-			statusCode = response.status;
-			working = false;
+			if (response.ok) {
+				statusText = "Successfully Updated"
+			} else {
+				statusText = response.statusText
+			}
+			working = false
 		}
 	}
 
@@ -46,10 +48,11 @@
 		<img alt="" class="w-6 mr-2" src="icons/upload.svg"/>
 		Upload Spreadsheet
 	</button>
-	<input accept=".xslx" bind:files={spreadsheet} bind:this={fileInput} class="hidden" id="spreadsheet"
+	<input accept=".xlsx" bind:files={spreadsheet} bind:this={fileInput} on:change={submitUpdate} class="hidden"
+	       id="spreadsheet"
 	       required type="file"/>
 
-	{#if statusCode}
-		<p>Status: {statusCode}</p>
+	{#if statusText}
+		<p>{statusText}</p>
 	{/if}
 </div>

@@ -32,7 +32,7 @@
 	export let files: AFile[]
 	let uploads: FileList
 	let fileInput: HTMLInputElement
-	let statusCode: number = null
+	let statusText: string = null
 	let working = false
 
 	async function change() {
@@ -44,7 +44,7 @@
 
 	async function submitUpload() {
 		working = true
-		statusCode = null
+		statusText = null
 		const formData = new FormData()
 		console.log(uploads)
 		for (let i = 0; i < uploads.length; i++) {
@@ -57,15 +57,14 @@
 		if (response.ok) {
 			files = await response.json()
 		} else {
-			statusCode = response.status
+			statusText = response.statusText
 		}
-		statusCode = response.status
 		working = false
 	}
 
 	async function deleteFile(path: string) {
 		working = true
-		statusCode = null
+		statusText = null
 		const formData = new FormData()
 		formData.append('path', path)
 		const response = await fetch(`api/admin/${sid}/g/${gid}/delete`, {
@@ -75,7 +74,7 @@
 		if (response.ok) {
 			files = await response.json()
 		} else {
-			statusCode = response.status
+			statusText = response.statusText
 		}
 		working = false
 	}
@@ -108,7 +107,7 @@
 	<input bind:files={uploads} bind:this={fileInput} class="hidden" multiple="multiple" on:change={change}
 	       type="file"/>
 
-	{#if statusCode}
-		<p>Status: {statusCode}</p>
+	{#if statusText}
+		<p>{statusText}</p>
 	{/if}
 </div>

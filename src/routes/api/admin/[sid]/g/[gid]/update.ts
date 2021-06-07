@@ -221,7 +221,7 @@ function splitRewards(value: string, location: Location, rewardList): string[] {
 	}
 	const rewards = value
 		.toLowerCase()
-		.split(new RegExp("[,\h;]+"))
+		.split(new RegExp("[,\\s;]+"))
 		.filter((reward) => reward !== '')
 		.map((reward) => reward.indexOf(':') > 0 ? reward : location.sheet.toLowerCase() + ":" + reward)
 	rewards.forEach((reward) => {
