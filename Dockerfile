@@ -3,7 +3,7 @@ RUN mkdir /app
 WORKDIR /app
 COPY *.json /app/
 RUN npm install --production=false
-COPY *.config.js /app/
+COPY *.config.js *.config.cjs /app/
 COPY ./src/ /app/src
 COPY ./static/ /app/static
 RUN npm run build
