@@ -4,9 +4,9 @@
 	export const preload: Preload = async function (this, page, session) {
 		const {sid, gid} = page.params
 
-		const res = await this.fetch(`/api/admin/${sid}/g/${gid}`)
+		const res = await this.fetch(`api/admin/${sid}/g/${gid}`)
 		if (res.status === 401) {
-			return this.redirect('302', `/${sid}/admin/login`)
+			return this.redirect('302', `${sid}/admin/login`)
 		} else if (res.status !== 200) {
 			return {error: `http response ${res.status}`}
 		}
