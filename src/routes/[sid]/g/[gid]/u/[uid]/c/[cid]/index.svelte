@@ -265,7 +265,7 @@
 
 <AppBar backpage="{backurl}">
 	<div class="flex flex-1 justify-center items-center">
-		<img class="p-4 h-16 mr-16" src="logo.png" alt="Logo">
+		<img alt="Logo" class="p-4 h-16 mr-16" src="logo.png">
 	</div>
 </AppBar>
 <div class="pt-20 px-2 max-w-3xl mx-auto">

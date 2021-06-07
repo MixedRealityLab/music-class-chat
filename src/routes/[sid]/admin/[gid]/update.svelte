@@ -36,17 +36,17 @@
 </script>
 
 <AppBar>
-	<AdminTabs url="{sid}/admin/{gid}" page="update"/>
+	<AdminTabs page="update" url="{sid}/admin/{gid}"/>
 </AppBar>
 
 <div class="px-4 pt-24 flex flex-col items-start max-w-3xl mx-auto">
 	<h1>Update Group</h1>
-	<button class="py-2 px-4 mt-8 flex items-center" on:click={openSelect} disabled="{working}">
-		<img src="icons/upload.svg" class="w-6 mr-2" alt=""/>
+	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}>
+		<img alt="" class="w-6 mr-2" src="icons/upload.svg"/>
 		Upload Spreadsheet
 	</button>
-	<input class="hidden" required id="spreadsheet" type="file" accept=".xslx"
-	       bind:this={fileInput} bind:files={spreadsheet}/>
+	<input accept=".xslx" bind:files={spreadsheet} bind:this={fileInput} class="hidden" id="spreadsheet"
+	       required type="file"/>
 
 	{#if statusCode}
 		<p>Status: {statusCode}</p>

@@ -106,7 +106,6 @@ export interface UUser {
 }
 
 export interface Message {
-	_id: string
 	text: string
 	read: boolean
 	fromUser: boolean
@@ -273,6 +272,19 @@ export interface SendMessageRequest {
 	// metadata
 	chatid?: string
 	notify: boolean
+}
+
+export enum LogType {
+	Error,
+	SignUp,
+	Chat
+}
+
+export interface LogItem {
+	type: LogType,
+	uid: string,
+	timestamp: number,
+	content?: string
 }
 
 //EOF

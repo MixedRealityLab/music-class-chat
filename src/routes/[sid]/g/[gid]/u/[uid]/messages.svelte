@@ -2,7 +2,7 @@
 	import type {Preload} from "@sapper/common";
 	import type {GenericResponse, UUser} from "../../../../../../_types";
 
-	export const preload: Preload = async function (this, page, session) {
+	export const preload: Preload = async function (this, page) {
 		const {sid, gid, uid} = page.params;
 		const res = await this.fetch(`api/user/${sid}/g/${gid}/u/${uid}`);
 		if (res.status !== 200) {
@@ -22,14 +22,28 @@
 	import UserTabs from '../../../../../../components/UserTabs.svelte';
 	import {stores} from '@sapper/app';
 
-	const {page} = stores();
-	const {sid, gid, uid} = $page.params;
-	export let error: string;
-	export let user: UUser;
+	const {page} = stores()
+	const {sid, gid, uid} = $page.params
+	export let error: string
+	export let user: UUser
+
+	if (user && user.messages && user.messages.some((message) => !message.read)) {
+		markRead()
+	}
+
+	async function markRead() {
+		const formData = new FormData()
+		formData.append('timestamp', user.messages[user.messages.length - 1].timestamp)
+		await fetch(`api/user/${sid}/g/${gid}/u/${uid}/markRead`, {
+			method: "POST",
+			body: formData
+		})
+	}
 </script>
 
 <AppBar title="{user ? user.group.name : 'Error'}">
-	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="settings"/>
+	<UserTabs page="settings" url="{sid}/g/{gid}/u/{uid}"
+	          unread="{user.messages && user.messages.some((message) => !message.read)}"/>
 </AppBar>
 <div class="px-2 pt-20">
 	{#if error}
@@ -38,17 +52,23 @@
 		<div class="max-w-3xl mx-auto flex flex-col">
 			{#if user.messages}
 				{#each user.messages as message}
-					{#if message.fromUser}
-						<div class="mb-6 mt-2 block py-2 px-6 flex rounded-2xl text-gray-300">
+					<div class="mb-6 mt-2 block py-2 px-6 flex flex-col text-gray-300">
+						<div class:font-bold={!message.read}>
 							{message.text}
 						</div>
-					{:else}
-						<div>
-							{message.text}
+						<div class="text-xs">
+							{new Date(Date.parse(message.timestamp)).toLocaleString("en-GB", {
+								hour: 'numeric',
+								minute: 'numeric',
+								day: 'numeric',
+								month: 'short',
+								year: 'numeric',
+							})}
 						</div>
-					{/if}
+					</div>
 				{/each}
 			{/if}
 		</div>
 	{/if}
+
 </div>

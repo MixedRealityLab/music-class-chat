@@ -12,7 +12,6 @@
 			return {error: `http response ${res.status}`};
 		}
 		const data = await res.json()
-		console.log(data)
 		if (data.error) {
 			return {error: data.error};
 		} else {
@@ -32,11 +31,32 @@
 	export let user
 	let statusCode: number = null
 	let working = false
+	let message: string
+
+	async function sendMessage() {
+		working = true
+		statusCode = null
+		const formData = new FormData()
+		formData.append('message', message)
+		const response = await fetch(`api/admin/${sid}/g/${gid}/${uid}/sendMessage`, {
+			method: "POST",
+			body: formData
+		})
+		if (response.ok) {
+			//files = await response.json()
+		} else {
+			statusCode = response.status
+		}
+		working = false
+	}
 </script>
 
 
 <AppBar backpage="{`${sid}/admin/${gid}`}"><h1>{user ? user.initials : ''}</h1></AppBar>
 <div class="px-2 pt-20 max-w-3xl mx-auto ">
+	<h1>Send Message</h1>
+	<textarea bind:value={message} placeholder="Message"/>
+	<button on:click={sendMessage}>Send</button>
 	<h1>Rewards</h1>
 	<div class="grid grid-cols-3 gap-2">
 		{#each user.rewards as reward}

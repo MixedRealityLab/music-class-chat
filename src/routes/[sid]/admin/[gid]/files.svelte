@@ -54,7 +54,7 @@
 			method: "POST",
 			body: formData
 		})
-		if(response.ok) {
+		if (response.ok) {
 			files = await response.json()
 		} else {
 			statusCode = response.status
@@ -72,7 +72,7 @@
 			method: "POST",
 			body: formData
 		})
-		if(response.ok) {
+		if (response.ok) {
 			files = await response.json()
 		} else {
 			statusCode = response.status
@@ -86,7 +86,7 @@
 </script>
 
 <AppBar>
-	<AdminTabs url="{sid}/admin/{gid}" page="files"/>
+	<AdminTabs page="files" url="{sid}/admin/{gid}"/>
 </AppBar>
 
 <div class="px-4 pt-24 flex flex-col items-start max-w-3xl mx-auto">
@@ -100,12 +100,12 @@
 		</div>
 	{/each}
 
-	<button class="py-2 px-4 mt-8 flex items-center" on:click={openSelect} disabled="{working}">
-		<img src="icons/add.svg" class="w-6 mr-2" alt=""/>
+	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}>
+		<img alt="" class="w-6 mr-2" src="icons/add.svg"/>
 		Add Files
 	</button>
-	<input class="hidden" type="file" multiple="multiple" bind:this={fileInput} bind:files={uploads}
-	       on:change={change}/>
+	<input bind:files={uploads} bind:this={fileInput} class="hidden" multiple="multiple" on:change={change}
+	       type="file"/>
 
 	{#if statusCode}
 		<p>Status: {statusCode}</p>

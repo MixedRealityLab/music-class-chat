@@ -29,20 +29,20 @@
 </script>
 
 <form class="p-4 flex flex-col items-center" on:submit|preventDefault={handleSubmit}>
-	<img class="px-4 pb-8 max-w-sm" src="logo.png" alt="Logo">
+	<img alt="Logo" class="px-4 pb-8 max-w-sm" src="logo.png">
 	<label class="block">
 		<span>Admin Email</span>
-		<input disabled={working} class="mt-1 block w-full" required type="email" name="email"
-		       bind:value="{email}"/>
+		<input bind:value="{email}" class="mt-1 block w-full" disabled={working} name="email" required
+		       type="email"/>
 	</label>
 	<label class="block pt-3">
 		<span>Password</span>
-		<input disabled={working} class="mt-1 block w-full" required type="password" name="password"
-		       bind:value="{password}"/>
+		<input bind:value="{password}" class="mt-1 block w-full" disabled={working} name="password" required
+		       type="password"/>
 	</label>
 
 	<div class="px-8 pt-4">
-		<input disabled={working} class="mt-1 w-full px-4 py-2 block bg-gray-300" type='submit' value='Login'>
+		<input class="mt-1 w-full px-4 py-2 block bg-gray-300" disabled={working} type='submit' value='Login'>
 	</div>
 	{#if status}
 		<p>{status}</p>

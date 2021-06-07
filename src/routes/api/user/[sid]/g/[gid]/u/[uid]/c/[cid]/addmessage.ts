@@ -1,7 +1,8 @@
 import type {SapperResponse} from '@sapper/server'
 import {isEnabled} from '../../../../../../../../../../_logic'
 import type {ServerRequest} from '../../../../../../../../../../_servertypes'
-import type * as t from '../../../../../../../../../../_types'
+import type {AddUserMessageRequest, DBUser, LogItem, UserChat} from "../../../../../../../../../../_types";
+import {LogType} from "../../../../../../../../../../_types";
 
 export async function post(req: ServerRequest, res: SapperResponse) {
 	try {
@@ -10,29 +11,29 @@ export async function post(req: ServerRequest, res: SapperResponse) {
 			res.writeHead(400).end(JSON.stringify({error: 'Bad Request'}))
 			return
 		}
-		const addRequest = req.body as t.AddUserMessageRequest
+		const addRequest = req.body as AddUserMessageRequest
 		if (!addRequest || !addRequest.message) {
 			console.log(`bad add message request`, addRequest)
 			res.writeHead(400).end(JSON.stringify({error: 'Bad Request'}))
 			return
 		}
 
-		let dbUserChat = await req.app.locals.db.collection('UserChats').findOne(
+		let dbUserChat = await req.app.locals.db.collection<UserChat>('UserChats').findOne(
 			{_id: `${sid}/${gid}/${cid}/${uid}`}
-		) as t.UserChat
+		)
 		//console.log(`get user chat ${sid}/${gid}/${cid}/${uid}`, dbuc)
 		if (!dbUserChat) {
 			res.writeHead(404).end(JSON.stringify({error: 'Not Found'}))
 			return
 		}
 		let messages = [...dbUserChat.messages, addRequest.message]
-		await req.app.locals.db.collection('UserChats').updateOne(
+		await req.app.locals.db.collection<UserChat>('UserChats').updateOne(
 			{_id: `${sid}/${gid}/${cid}/${uid}`},
 			{$set: {messages: messages, nextix: addRequest.nextix}})
 		// user
-		let dbUser = await req.app.locals.db.collection('Users').findOne(
+		let dbUser = await req.app.locals.db.collection<DBUser>('Users').findOne(
 			{_id: `${sid}/${gid}/${uid}`}
-		) as t.DBUser
+		)
 		//console.log(`get user ${sid}/${gid}/${uid}`, dbuser)
 		if (!dbUser) {
 			res.writeHead(404).end(JSON.stringify({error: 'Not Found'}))
@@ -59,9 +60,12 @@ export async function post(req: ServerRequest, res: SapperResponse) {
 			content.sort((a, b) => (a.sortorder ? a.sortorder : 0) - (b.sortorder ? b.sortorder : 0))
 		}
 
-		await req.app.locals.db.collection('Users').updateOne(
+		await req.app.locals.db.collection<DBUser>('Users').updateOne(
 			{_id: `${sid}/${gid}/${uid}`},
 			{$set: {rewards: rewards, chats: ucs, content: content}})
+		await req.app.locals.db.collection<LogItem>('EventLog').insertOne({
+			timestamp: new Date().getTime(), type: LogType.Chat, uid: dbUser._id
+		})
 
 		res.setHeader('Content-Type', 'application/json')
 		res.end(JSON.stringify({}))

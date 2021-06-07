@@ -79,18 +79,18 @@
 			<form on:submit|preventDefault={handleSubmit}>
 				<label class="block pt-3">
 					<span>Group Name</span>
-					<input class="mt-1 block w-full" required type="text" name="name"
-					       bind:value="{groupName}"/>
+					<input bind:value="{groupName}" class="mt-1 block w-full" name="name" required
+					       type="text"/>
 				</label>
 				<label class="block pt-3">
 					<span>Password</span>
-					<input class="mt-1 block w-full" required type="password" name="password"
-					       bind:value="{password}"/>
+					<input bind:value="{password}" class="mt-1 block w-full" name="password" required
+					       type="password"/>
 				</label>
 
 				<label class="block pt-3">
 					<span>Spreadsheet</span>
-					<input class="mt-1 block w-full text-white" required id="file" type="file" bind:files/>
+					<input bind:files class="mt-1 block w-full text-white" id="file" required type="file"/>
 				</label>
 
 				<input class="mt-4 w-full px-4 py-2 block bg-gray-300" type='submit' value='Create New Group'>

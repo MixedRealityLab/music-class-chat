@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import type {Preload} from "@sapper/common";
-	import type * as t from '../../../../../../_types';
+	import type {GenericResponse, UUser} from "../../../../../../_types";
 
 	export const preload: Preload = async function (this, page, session) {
 		const {sid, gid, uid} = page.params;
@@ -8,15 +8,16 @@
 		if (res.status !== 200) {
 			return {error: `Sorry, there was a problem (${res.status})`};
 		}
-		const data = await res.json() as t.GenericResponse;
+		const data = await res.json() as GenericResponse;
 		if (data.error) {
 			return {error: data.error};
 		} else {
-			return {user: data as t.UUser};
+			return {user: data as UUser};
 		}
 	}
 </script>
 <script lang="ts">
+	import type {UUser} from "../../../../../../_types";
 	import AppBar from '../../../../../../components/AppBar.svelte';
 	import Content from '../../../../../../components/Content.svelte';
 	import UserTabs from '../../../../../../components/UserTabs.svelte';
@@ -25,12 +26,12 @@
 	const {page} = stores();
 	const {sid, gid, uid} = $page.params;
 	export let error: string;
-	export let user: t.UUser;
+	export let user: UUser;
 </script>
 
 
 <AppBar title="{user ? user.group.name : 'Error'}">
-	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="resources"/>
+	<UserTabs page="resources" url="{sid}/g/{gid}/u/{uid}" unread="{user.messages && user.messages.some((message) => !message.read)}"/>
 </AppBar>
 <div class="px-2 pt-20">
 	{#if error}

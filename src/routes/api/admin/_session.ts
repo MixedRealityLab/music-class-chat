@@ -5,7 +5,7 @@ export async function isValidAdminSession(req: ServerRequest): Promise<boolean> 
 	const {sid} = req.params
 	const {sessionid} = req.session
 
-	if(!sessionid) {
+	if (!sessionid) {
 		console.log(`session id ${sessionid}`)
 		return false
 	}

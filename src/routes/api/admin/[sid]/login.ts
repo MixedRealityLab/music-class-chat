@@ -3,15 +3,13 @@ import type {Response} from "express"
 import {customAlphabet} from "nanoid"
 import nodemailer from 'nodemailer'
 import type {ServerRequest} from "../../../../_servertypes"
-import {idAlphabet} from "../../../../_types";
 import type {AdminSession, DBAdmin, DBSite} from "../../../../_types"
+import {idAlphabet} from "../../../../_types";
 
 const emailConfigured = 'SMTP.host' in process.env
 const transport = nodemailer.createTransport({
 	host: process.env["SMTP.host"],
 	port: parseInt(process.env["SMTP.port"]),
-	logger: true,
-	debug: true,
 	auth: {
 		user: process.env["SMTP.user"],
 		pass: process.env["SMTP.pass"]

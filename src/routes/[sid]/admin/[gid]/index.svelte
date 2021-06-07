@@ -35,11 +35,11 @@
 </script>
 
 <AppBar>
-	<AdminTabs url="{sid}/admin/{gid}" page="users"/>
+	<AdminTabs page="users" url="{sid}/admin/{gid}"/>
 </AppBar>
 
 <div class="px-4 pt-24 flex flex-col max-w-3xl mx-auto">
-	<img class="px-4 pb-8 max-w-xs self-center" src="logo.png" alt="Logo">
+	<img alt="Logo" class="px-4 pb-8 max-w-xs self-center" src="logo.png">
 
 	<h1>Users</h1>
 	{#each users as user}

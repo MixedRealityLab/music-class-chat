@@ -28,7 +28,7 @@
 </script>
 
 <AppBar title="{user ? user.group.name : 'Error'}">
-	<UserTabs url="{sid}/g/{gid}/u/{uid}" page="chats"/>
+	<UserTabs page="chats" url="{sid}/g/{gid}/u/{uid}" unread="{user.messages && user.messages.some((message) => !message.read)}"/>
 </AppBar>
 <div class="p-8 pt-24">
 
