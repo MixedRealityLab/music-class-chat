@@ -1,39 +1,56 @@
 version: '3.1'
 
-# Docker compose file for development.
-# This should, in theory, allow editing and hot reloading of files.
-# However, this doesn't work on Windows, as the file change notifications aren't sent.
-# Apparently keeping the files in a WSL linux partition makes it work.
-
 volumes:
-    uploads: { }
-    db: { }
-    sessions: { }
+    uploads: {}
+    db: {}
+    src: {}
+    sessions: {}
 
 services:
     mongo:
         image: mongo
-        command: --wiredTigerCacheSizeGB 0.5
         expose:
             - "27017"
         restart: unless-stopped
         volumes:
             - db:/data/db
 
+    mongo-express:
+        image: mongo-express
+        restart: unless-stopped
+        depends_on:
+            - mongo
+        ports:
+            - "8081:8081"
+
+    # Hack for Windows not triggering inotify
+    sync:
+        build: docker/sync
+        restart: unless-stopped
+        volumes:
+            - ./src:/dev/src/:consistent
+            - src:/app/src
+
     server:
         build:
             context: .
-            dockerfile: dev.Dockerfile
-        environment:
-          NODE_OPTIONS: --max_old_space_size=2048
+            dockerfile: Dockerfile.dev
         restart: unless-stopped
+        environment:
+            - BASEPATH
+            - NODE_ENV
+            - SMTP.host
+            - SMTP.port
+            - SMTP.user
+            - SMTP.pass
+            - SMTP.email
         depends_on:
             - 'mongo'
         ports:
             - "3000:3000"
             - "10000:10000"
         volumes:
-            - ./src:/app/src/:consistent
-            - ./static:/app/static/:ro
             - uploads:/app/uploads
+            - src:/app/src
             - sessions:/app/sessions
+            - ./static:/app/static/:ro

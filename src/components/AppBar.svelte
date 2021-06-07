@@ -1,14 +1,12 @@
 <script>
-  export let title;
-  export let backpage;
+	export let backpage;
 </script>
 
-<div class="w-full pt-1 pb-1 bg-gray-700 text-2xl text-white px-2">
-{#if backpage}
-  <div class="p-1 inline">
-    <a href="{backpage}">&lt;</a>
-  </div>
-{/if}
-  <div class="p-1 inline">{title}</div>
-</div>
 
+<div class="h-16 w-full flex justify-start items-center text-white fixed z-10 bg-black">
+	{#if backpage}
+		<a href="{backpage}" class="p-4"><img src="arrow_left.svg" width="24" height="24" alt="Back"/></a>
+	{/if}
+
+	<slot class="flex-1"></slot>
+</div>

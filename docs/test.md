@@ -5,12 +5,16 @@ note, uses database 'music-class-chat'.
 ```
 sudo docker exec -it vagrant_mongo_1 mongo
 ```
+
 if required
+
 ```
 use admin
 db.auth('music-class-chat-server','XXX')
 ```
+
 then
+
 ```
 use music-class-chat
 db.Sites.insertOne({
@@ -24,10 +28,7 @@ db.Groups.insertOne({
   showpublic: true, requireinitials: true, requirepin: false, 
   requireemail: false, allowselfenrol: true, password: "please", 
   allowguest: true, rewards: [], 
-  site:{_id:"test", name: "Test Site", 
-  description: "Test and development only",
-  admins:[{ email: "chris.greenhalgh@nottingham.ac.uk", password: "",
-  enabled: true }]}
+  sid:"test"
 });
 db.AdminSessions.insertOne({
   admin: "chris.greenhalgh@nottingham.ac.uk", password: "secret",
@@ -47,9 +48,11 @@ db.Groups.insertOne({
 ```
 
 try
+
 - test group home: http://localhost:3000/test/g/test1/
 - update group form: http://localhost:3000/test/admin/secret12345678/g/test1/update - use example config spreadsheet
-- user start form: http://localhost:3000/test/g/test1/signup (password: '1234') - note the userid, e.g. '4ec3d54fc23e17ff232a731a' if you want to return
+- user start form: http://localhost:3000/test/g/test1/signup (password: '1234') - note the userid, e.g. '
+  4ec3d54fc23e17ff232a731a' if you want to return
 
 
 

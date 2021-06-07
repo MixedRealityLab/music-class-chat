@@ -8,7 +8,5 @@
 <GlobalStyle/>
 
 <main>
-	<div class="container sm:container mx-auto">
-		<slot></slot>
-	</div>
+	<slot></slot>
 </main>

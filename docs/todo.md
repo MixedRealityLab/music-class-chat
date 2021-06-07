@@ -13,22 +13,24 @@
 - [x] user rewards
 - [x] user content
 - [ ] flags on chats, e.g. new message/waiting (may need lookahead)
-- [ ] content zoom (resources and chat views)
+- [x] content zoom (resources and chat views)
 - [ ] chat view auto-scrolling (bottom/new messages) / fixed nav bar
 - [ ] user pin? (requires sessions)
-- [ ] google classrom integration??
-- [ ] fancy rewards background/placement? (TBD)
+- [ ] google classroom integration??
+- [x] fancy rewards background/placement? (TBD)
 - [ ] assets and styling (from designer)
 - [ ] site-specific css / styling
 - [ ] site public list page
 - [ ] admin session generate
-- [ ] admin session login
-- [ ] admin session checks (including group update)
-- [ ] admin group view
-- [ ] admin new group
-- [ ] admin user view
+- [x] admin session login
+- [x] admin session checks (including group update)
+- [x] admin group view
+- [x] admin new group
+- [x] admin user view
 - [ ] admin add user(s)
 - [ ] admin file upload support
 - [ ] mongo database security
 - [ ] server db configuration
 
+- [ ] file upload
+- [ ] local naming of spreadsheet stuff

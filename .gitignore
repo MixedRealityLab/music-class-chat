@@ -4,6 +4,8 @@
 /.idea/workspace.xml
 /.idea/httpRequests
 
+.env
+
 .DS_Store
 
 node_modules/

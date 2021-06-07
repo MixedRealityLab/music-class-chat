@@ -3,16 +3,19 @@
 ## end user
 
 Note:
+
 - `sid` = site id
 - `gid` = group id
 
 - [ ] `/sid:/` - site home - public group list?
 
 Signup path(s):
+
 - [x] `/sid:/g/gid:/` - home? (public)
 - [x] `/sid:/g/gid:/signup` - sign-up form, requires passcode
 
 User path(s):
+
 - [x] `/sid:/g/gid:/u/uid:/` - home, on chats tab
 - [x] `/sid:/g/gid:/u/uid:/rewards` - rewards tab
 - [x] `/sid:/g/gid:/u/uid:/resources` - resources tab
@@ -22,6 +25,7 @@ User path(s):
 - [ ] `/sid:/g/gid:/u/uid:/c/cid:/mix:` - zoom in on specific UserMessage (index)
 
 components:
+
 - [x] AppBar
 - [x] UserTabs
 - [x] Content
@@ -41,6 +45,7 @@ components:
 - [ ] `/sid:/admin/sessionid:/endsession` - end session (early)
 
 components:
+
 - AdminBar
 - AdminMenu
 
