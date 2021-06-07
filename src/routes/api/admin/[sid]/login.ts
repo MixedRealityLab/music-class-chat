@@ -24,8 +24,12 @@ export async function post(req: ServerRequest, res: Response) {
 			res.status(400).json({error: 'Bad Request'})
 			return
 		}
-		const site: DBSite = await req.app.locals.db.collection('Sites').findOne({_id: sid})
-		const admin = site.admins.find((admin: DBAdmin) => admin.enabled && admin.email === email)
+		const site = await req.app.locals.db.collection<DBSite>('Sites').findOne({_id: sid})
+		if(site == null) {
+			res.status(404).json({error: 'Site Doesn\'t Exist'})
+			return
+		}
+		const admin = site.admins.find((admin: DBAdmin) => admin.enabled && admin.email.toLowerCase() === email.toLowerCase())
 		if (!admin) {
 			res.status(401).json({error: 'Not an Admin'})
 			return

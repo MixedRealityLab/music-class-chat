@@ -10,7 +10,6 @@
     }
 </style>
 
-
 <div class="w-full pt-1 pb-1 flex justify-evenly text-white text-center font-bold text-sm md:text-base">
 	<a href="{url}/">
 		<div class="px-3 py-2 cursor-pointer" class:text-blue-400="{page=='chats'}">Explore</div>

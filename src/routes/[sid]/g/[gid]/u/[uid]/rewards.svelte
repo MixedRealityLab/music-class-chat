@@ -34,7 +34,7 @@
 	{#if error}
 		<p>ERROR: {error}</p>
 	{:else}
-		<div class="max-w-3xl mx-auto grid grid-cols-2 gap-2">
+		<div class="max-w-3xl mx-auto grid grid-cols-2 gap-6">
 			{#each user.rewards as reward}
 				{#if (reward.got && reward.icon) || (!reward.got && reward.noicon)}
 					<img src="{reward.got ? reward.icon : reward.noicon}" alt="reward {reward._id}">

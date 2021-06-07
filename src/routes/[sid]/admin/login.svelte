@@ -32,17 +32,18 @@
 	<img alt="Logo" class="px-4 pb-8 max-w-sm" src="logo.png">
 	<label class="block">
 		<span>Admin Email</span>
-		<input bind:value="{email}" class="mt-1 block w-full" disabled={working} name="email" required
-		       type="email"/>
+		<input bind:value="{email}" class="mt-1 block w-full" disabled={working} name="email"
+		       required type="email"/>
 	</label>
 	<label class="block pt-3">
 		<span>Password</span>
-		<input bind:value="{password}" class="mt-1 block w-full" disabled={working} name="password" required
-		       type="password"/>
+		<input bind:value="{password}" class="mt-1 block w-full" disabled={working} name="password"
+		       required type="password"/>
 	</label>
 
 	<div class="px-8 pt-4">
-		<input class="mt-1 w-full px-4 py-2 block bg-gray-300" disabled={working} type='submit' value='Login'>
+		<input class="mt-1 w-full px-4 py-2 block text-white" disabled={working || !email || !password}
+		       type='submit' value='Login' style="background: #1796d8">
 	</div>
 	{#if status}
 		<p>{status}</p>

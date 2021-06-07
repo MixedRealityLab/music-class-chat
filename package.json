@@ -2,12 +2,15 @@
 	"name": "music-class",
 	"description": "TODO",
 	"version": "0.1",
+	"type": "module",
 	"scripts": {
 		"dev": "sapper dev",
 		"build": "sapper build",
 		"export": "sapper export --baseurl=${BASEURL:-}",
 		"validate": "svelte-check --ignore src/node_modules/@sapper",
-		"start": "node __sapper__/build"
+		"start": "node __sapper__/build",
+		"genPassword": "node src/scripts/generatePassword.js"
+
 	},
 	"dependencies": {
 		"abort-controller": "^3.0.0",
@@ -48,7 +51,6 @@
 		"@types/express-fileupload": "^1.1.6",
 		"@types/express-session": "^1.17.3",
 		"@types/mongodb": "^3.6.16",
-		"@types/nanoid": "^3.0.0",
 		"@types/node": "^15.6.1",
 		"@types/nodemailer": "^6.4.2",
 		"@types/react": "^17.0.6",
