@@ -2,39 +2,15 @@ export const idAlphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0
 
 // types specific to user client
 
-// Site / organisation - User view
-export interface USite {
-	_id: string
-	// TODO: CSS, etc.
-}
-
 export interface AFile {
 	path: string
 }
 
-// ... Admin view
-export interface ASite extends USite {
-	name: string
-	description: string
-	admins: AAdmin[]
-}
-
-// ... DB (server) view
-export interface DBSite extends USite {
-	name: string
-	description: string
-	admins: DBAdmin[]
-}
-
-// Admin within Site, Admin view
-export interface AAdmin {
-	email: string
-	enabled: boolean
-}
-
-export interface DBAdmin extends AAdmin {
+export interface DBAdmin {
 	password: string
 	salt: string
+	_id: string
+	enabled: boolean
 }
 
 export interface AdminSession {
@@ -46,7 +22,6 @@ export interface AdminSession {
 
 // Group, User view
 interface UGroupSummaryBase {
-	id: string
 	_id: string
 	name: string
 	description: string
@@ -62,11 +37,9 @@ interface UGroupBase extends UGroupSummaryBase {
 }
 
 export interface UGroupSummary extends UGroupSummaryBase {
-	site: USite
 }
 
 export interface UGroup extends UGroupBase {
-	site: USite
 }
 
 // ... Admin view
@@ -75,13 +48,8 @@ export interface AGroupBase {
 	rewards: Reward[]
 }
 
-export interface AGroup extends UGroupBase, AGroupBase {
-	site: ASite
-}
-
 // ... DB view
 export interface DBGroup extends UGroupBase, AGroupBase {
-	sid: string
 }
 
 // Reward - no filtering needed
@@ -94,7 +62,7 @@ export interface Reward {
 
 // User, user view
 export interface UUser {
-	_id: string // site/group/usercode
+	_id: string // group/usercode
 	usercode: string
 	groupid: string
 	group: UGroupSummary
@@ -204,6 +172,8 @@ export interface UserChatSummary {
 	unread: boolean
 	waiting: boolean
 	nextix: number
+	allof?: string[]
+	andnot?: string[]
 }
 
 // full UserChat
@@ -231,11 +201,6 @@ export interface SignupResponse {
 	usercode?: string
 }
 
-// User patch chat (unread)
-export interface UserChatPatchRequest {
-	unread: boolean
-}
-
 // add user message
 export interface AddUserMessageRequest {
 	message: UserMessage
@@ -243,35 +208,6 @@ export interface AddUserMessageRequest {
 	reset?: string[]
 	nextix: number
 	waiting: boolean
-}
-
-// admin request session
-export interface RequestSessionRequest {
-	email: string
-}
-
-// admin start session
-export interface StartSessionRequest {
-	email: string
-	password?: string
-}
-
-// admin add group
-export interface AddGroupResponse {
-	groupid: string
-}
-
-// add message
-export interface SendMessageRequest {
-	// message core
-	message?: string
-	content?: Content
-	rewardicons?: string[]
-	rewards?: string[]
-	reset?: string[]
-	// metadata
-	chatid?: string
-	notify: boolean
 }
 
 export enum LogType {

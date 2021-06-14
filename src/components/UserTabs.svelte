@@ -6,7 +6,7 @@
 
 <style>
     .pip {
-        @apply absolute right-0 top-0 w-2 h-2 m-1 bg-red-600 rounded-2xl
+        @apply absolute right-0 top-0 w-2 h-2 m-1 bg-red-600 rounded-2xl;
     }
 </style>
 

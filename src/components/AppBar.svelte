@@ -1,5 +1,5 @@
 <script>
-	export let backpage;
+	export let backpage = null;
 </script>
 
 

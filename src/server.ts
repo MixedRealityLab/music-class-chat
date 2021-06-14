@@ -9,15 +9,16 @@ import SessionFileStore from 'session-file-store'
 import type {ServerRequest} from './_servertypes'
 
 const {PORT, MONGODB, BASEPATH} = process.env
+const basePath = BASEPATH ?? ''
 const app = express()
 
 let FileStore = (SessionFileStore)(session)
 let fileStoreOptions = {}
 
-console.log(`base path: ${BASEPATH}`)
-app.use(`${BASEPATH}/uploads`, express.static('uploads'))
+console.log(`base path: ${basePath}`)
+app.use(`${basePath}/uploads`, express.static('uploads'))
 app.use(
-	BASEPATH,
+	basePath,
 	express.static('static'),
 	cors(),
 	express.json(),

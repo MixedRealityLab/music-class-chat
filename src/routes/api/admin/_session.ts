@@ -1,10 +1,8 @@
 import type {ServerRequest} from "../../../_servertypes";
-import type {AdminSession, DBSite} from "../../../_types";
+import type {AdminSession, DBAdmin} from "../../../_types";
 
 export async function isValidAdminSession(req: ServerRequest): Promise<boolean> {
-	const {sid} = req.params
 	const {sessionid} = req.session
-
 	if (!sessionid) {
 		console.log(`session id ${sessionid}`)
 		return false
@@ -28,17 +26,13 @@ export async function isValidAdminSession(req: ServerRequest): Promise<boolean> 
 		return false
 	}
 
-	const dbSite = await req.app.locals.db.collection<DBSite>('Sites').findOne({_id: sid})
-	if (!dbSite) {
+	const dbAdmin = await req.app.locals.db.collection<DBAdmin>('Admins').findOne({_id: session.email})
+	if (!dbAdmin) {
+		console.log(`admin ${session.email} not found`);
 		return false
 	}
-	const admin = dbSite.admins.find((a) => a.email == session.email);
-	if (!admin) {
-		console.log(`admin ${session.email} not found on site ${sid}`);
-		return false
-	}
-	if (!admin.enabled) {
-		console.log(`admin ${session.email} disabled on site ${sid}`);
+	if (!dbAdmin.enabled) {
+		console.log(`admin ${session.email} disabled`);
 		return false
 	}
 

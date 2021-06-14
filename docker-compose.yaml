@@ -25,7 +25,7 @@ services:
 
     # Hack for Windows not triggering inotify
     sync:
-        build: docker/sync
+        build: src/docker/sync
         restart: unless-stopped
         volumes:
             - ./src:/dev/src/:consistent
@@ -34,7 +34,7 @@ services:
     server:
         build:
             context: .
-            dockerfile: Dockerfile.dev
+            dockerfile: src/docker/dev/Dockerfile
         restart: unless-stopped
         environment:
             - BASEPATH

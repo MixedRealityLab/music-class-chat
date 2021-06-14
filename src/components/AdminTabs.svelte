@@ -1,6 +1,6 @@
-<script>
-	export let url
-	export let page
+<script lang="ts">
+	export let url: string
+	export let page: string
 </script>
 
 <div class="w-full pt-1 pb-1 flex justify-evenly text-white text-center font-bold text-sm md:text-base">

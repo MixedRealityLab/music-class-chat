@@ -21,5 +21,5 @@ export interface ServerRequest extends sapper.SapperRequest {
 	files: MyFiles
 	body?: any
 	protocol: string
-	hostname: string
+	get: (string) => string
 }
