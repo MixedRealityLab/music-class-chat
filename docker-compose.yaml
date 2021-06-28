@@ -39,11 +39,11 @@ services:
         environment:
             - BASEPATH
             - NODE_ENV
-            - SMTP.host
-            - SMTP.port
-            - SMTP.user
-            - SMTP.pass
-            - SMTP.email
+            - SMTP_host
+            - SMTP_port
+            - SMTP_user
+            - SMTP_pass
+            - SMTP_email
         depends_on:
             - 'mongo'
         ports:

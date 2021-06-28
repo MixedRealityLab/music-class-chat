@@ -6,13 +6,13 @@ import type {ServerRequest} from "../../../_servertypes"
 import type {AdminSession, DBAdmin} from "../../../_types"
 import {idAlphabet} from "../../../_types";
 
-const emailConfigured = 'SMTP.host' in process.env
+const emailConfigured = 'SMTP_host' in process.env
 const transport = nodemailer.createTransport({
-	host: process.env["SMTP.host"],
-	port: parseInt(process.env["SMTP.port"]),
+	host: process.env["SMTP_host"],
+	port: parseInt(process.env["SMTP_port"]),
 	auth: {
-		user: process.env["SMTP.user"],
-		pass: process.env["SMTP.pass"]
+		user: process.env["SMTP_user"],
+		pass: process.env["SMTP_pass"]
 	}
 });
 
@@ -55,7 +55,7 @@ export async function post(req: ServerRequest, res: Response) {
 		if (emailConfigured) {
 			console.log('Sending Email')
 			await transport.sendMail({
-				from: process.env['SMTP.email'],
+				from: process.env['SMTP_email'],
 				to: email,
 				subject: 'Admin Login',
 				text: 'Session: ' + sessionUrl,
