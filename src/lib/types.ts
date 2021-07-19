@@ -211,6 +211,7 @@ export interface AddUserMessageRequest {
 }
 
 export enum LogType {
+	Admin = 'Admin',
 	Error = 'Error',
 	SignUp = 'SignUp',
 	Chat = 'Chat',

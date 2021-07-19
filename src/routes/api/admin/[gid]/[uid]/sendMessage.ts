@@ -1,6 +1,7 @@
 import {getDb} from "$lib/db";
-import {isValidAdminSession} from "$lib/session";
+import {getAdmin, isValidAdminSession} from "$lib/session";
 import type {DBUser} from "$lib/types";
+import {LogItem, LogType} from "$lib/types";
 import type {EndpointOutput, Request} from "@sveltejs/kit";
 import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
 
@@ -32,6 +33,12 @@ export async function post(req: Request): Promise<EndpointOutput> {
 			user.messages.push(messageItem)
 			await db.collection<DBUser>('Users').replaceOne({_id: user._id}, user)
 		}
+		await db.collection<LogItem>('EventLog').insertOne({
+			timestamp: new Date().getTime(),
+			type: LogType.Admin,
+			uid: await getAdmin(req),
+			content: 'Sent message to all'
+		})
 		return {body: "success"}
 	} else {
 		const filter = {_id: `${gid}/${uid}`}
@@ -50,7 +57,14 @@ export async function post(req: Request): Promise<EndpointOutput> {
 			text: message,
 			timestamp: new Date().toISOString()
 		})
+		await db.collection<LogItem>('EventLog').insertOne({
+			timestamp: new Date().getTime(),
+			type: LogType.Admin,
+			uid: await getAdmin(req),
+			content: 'Sent message to ' + uid
+		})
 		await db.collection<DBUser>('Users').replaceOne(filter, user)
+
 		delete user.group
 		delete user.chats
 		delete user.pin

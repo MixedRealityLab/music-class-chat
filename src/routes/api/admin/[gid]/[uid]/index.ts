@@ -1,6 +1,5 @@
 import {getDb} from "$lib/db";
 import {isValidAdminSession} from "$lib/session";
-import type {DBUser} from "$lib/types";
 import type {EndpointOutput, Request} from "@sveltejs/kit";
 
 export async function get(req: Request): Promise<EndpointOutput> {
@@ -14,7 +13,7 @@ export async function get(req: Request): Promise<EndpointOutput> {
 	}
 
 	const db = await getDb()
-	const user = await db.collection<DBUser>('Users').findOne(
+	const user = await db.collection('Users').findOne(
 		{_id: `${gid}/${uid}`}
 	)
 	delete user.group

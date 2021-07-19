@@ -1,5 +1,6 @@
 import {getDb} from "$lib/db";
-import {isValidAdminSession} from "$lib/session"
+import {getAdmin, isValidAdminSession} from "$lib/session"
+import {LogItem, LogType} from "$lib/types";
 import type {AFile} from "$lib/types";
 import type {EndpointOutput, Request} from "@sveltejs/kit";
 import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
@@ -38,6 +39,12 @@ export async function post(req: Request): Promise<EndpointOutput> {
 
 	const db = await getDb()
 	await db.collection<AFile>('Files').insertMany(fileDocs)
+	await db.collection<LogItem>('EventLog').insertOne({
+		timestamp: new Date().getTime(),
+		type: LogType.Admin,
+		uid: await getAdmin(req),
+		content: 'Uploaded files: ' + JSON.stringify(fileName)
+	})
 
 	return {body: await db.collection('Files').find().toArray()}
 }

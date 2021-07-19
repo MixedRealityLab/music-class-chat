@@ -40,3 +40,15 @@ export async function isValidAdminSession(req: Request): Promise<boolean> {
 
 	return true
 }
+
+export async function getAdmin(req: Request): Promise<string> {
+	const sessionId = req.locals.session
+	const db = await getDb()
+	const session = await db.collection<AdminSession>('AdminSessions').findOne({id: sessionId});
+	if (!session) {
+		console.log(`no admin session found: ${sessionId}`)
+		return null
+	} else {
+		return session.email
+	}
+}

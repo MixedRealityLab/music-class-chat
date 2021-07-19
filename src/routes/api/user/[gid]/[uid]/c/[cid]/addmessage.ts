@@ -9,7 +9,7 @@ export async function post({params, body}: Request): Promise<EndpointOutput> {
 	if (!gid || !uid || !cid) {
 		return {status: 400, body: {error: 'Bad Request'}}
 	}
-	const addRequest = body as AddUserMessageRequest
+	const addRequest = body as unknown as AddUserMessageRequest
 	if (!addRequest || !addRequest.message) {
 		console.log(`bad add message request`, addRequest)
 		return {status: 400, body: {error: 'Bad Request'}}

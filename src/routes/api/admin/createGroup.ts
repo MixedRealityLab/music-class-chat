@@ -1,5 +1,6 @@
 import {getDb} from "$lib/db";
-import {isValidAdminSession} from "$lib/session"
+import {getAdmin, isValidAdminSession} from "$lib/session"
+import {LogItem, LogType} from "$lib/types";
 import type {DBGroup} from "$lib/types"
 import type {EndpointOutput, Request} from "@sveltejs/kit";
 import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
@@ -38,6 +39,12 @@ export async function post(req: Request): Promise<EndpointOutput> {
 	await db.collection<DBGroup>('Groups').insertOne(dbgroup)
 
 	await readXlsx(gid, buffer, db)
+	await db.collection<LogItem>('EventLog').insertOne({
+		timestamp: new Date().getTime(),
+		type: LogType.Admin,
+		uid: await getAdmin(req),
+		content: 'Created Group ' + gid
+	})
 
 	return {body: await db.collection('Groups').find().toArray()}
 }

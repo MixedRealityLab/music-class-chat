@@ -18,7 +18,7 @@ export async function get(req: Request): Promise<EndpointOutput> {
 		return {status: 404, body: {error: 'Group Doesn\'t Exist'}}
 	}
 
-	const users = await db.collection<DBUser>('Users').find({groupid: gid}).toArray()
+	const users = await db.collection('Users').find({groupid: gid}).toArray()
 	users.forEach(user => {
 		delete user.group
 		delete user.groupid
@@ -27,6 +27,6 @@ export async function get(req: Request): Promise<EndpointOutput> {
 		delete user.pin
 		delete user.content
 	})
-	const files = await db.collection<AFile>('Files').find().toArray()
+	const files = await db.collection('Files').find().toArray()
 	return {body: {users: users, files: files}}
 }

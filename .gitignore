@@ -6,11 +6,8 @@
 .svelte-kit
 build
 
-.env
-
 .DS_Store
 
 node_modules/
-__sapper__/
 
 .vagrant/
