@@ -1,44 +1,43 @@
-import type {Response} from 'express'
-import type {ServerRequest} from '../../../_servertypes'
-import type {DBGroup} from "../../../_types"
+import {getDb} from "$lib/db";
+import {isValidAdminSession} from "$lib/session"
+import type {DBGroup} from "$lib/types"
+import type {EndpointOutput, Request} from "@sveltejs/kit";
+import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
 import {readXlsx} from "./[gid]/update";
-import {isValidAdminSession} from "./_session"
 
-export async function post(req: ServerRequest, res: Response) {
-	try {
-		const {name, password} = req.body
-		const gid = name.replace(new RegExp('\\s+'), '').toLowerCase()
-		const file = req.files.spreadsheet
+export async function post(req: Request): Promise<EndpointOutput> {
+	const body = req.body as ReadOnlyFormData
+	const name = body.get('name')
+	const password = body.get('password')
+	const gid = name.replace(new RegExp('\\s+'), '').toLowerCase()
+	const file = body.get('spreadsheet')
+	const buffer = Buffer.from(file, 'base64')
 
-		if (!gid || !file) {
-			res.status(400).json({error: 'Bad Request'})
-			return;
-		}
-
-		if (!await isValidAdminSession(req)) {
-			res.status(401).json({error: 'Unauthorized'})
-		}
-
-		const dbgroup: DBGroup = {
-			_id: gid,
-			name: name,
-			description: "",
-			password: password,
-			rewards: [],
-			allowguest: true,
-			allowselfenrol: true,
-			requireemail: false,
-			requireinitials: true,
-			requirepin: false,
-			showpublic: true
-		}
-		await req.app.locals.db.collection<DBGroup>('Groups').insertOne(dbgroup)
-
-		await readXlsx(gid, file.data, req.app.locals.db)
-		const groups = await req.app.locals.db.collection<DBGroup>('Groups').find().toArray()
-		res.json({groups});
-	} catch (error) {
-		console.log('Error (update group)', error);
-		res.status(500).json({error: error})
+	if (!gid || !file) {
+		return {status: 400, body: {error: 'Bad Request'}}
 	}
+
+	if (!await isValidAdminSession(req)) {
+		return {status: 401, body: {error: 'Unauthorized'}}
+	}
+
+	const dbgroup: DBGroup = {
+		_id: gid,
+		name: name,
+		description: "",
+		password: password,
+		rewards: [],
+		allowguest: true,
+		allowselfenrol: true,
+		requireemail: false,
+		requireinitials: true,
+		requirepin: false,
+		showpublic: true
+	}
+	const db = await getDb()
+	await db.collection<DBGroup>('Groups').insertOne(dbgroup)
+
+	await readXlsx(gid, buffer, db)
+
+	return {body: await db.collection('Groups').find().toArray()}
 }

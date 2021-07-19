@@ -1,0 +1,34 @@
+version: '3.1'
+
+volumes:
+    uploads: {}
+    db: {}
+
+services:
+    mongo:
+        image: mongo
+        expose:
+            - "27017"
+        restart: unless-stopped
+        volumes:
+            - db:/data/db
+
+    wetlands:
+        build: .
+        restart: unless-stopped
+        depends_on:
+            - 'mongo'
+        expose:
+            - "3000"
+        volumes:
+            - uploads:/app/uploads
+
+    nginx:
+        build: src/docker/nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        depends_on:
+            - wetlands
+        volumes:
+            - uploads:/var/www/wetlands/uploads

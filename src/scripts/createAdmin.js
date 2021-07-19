@@ -1,7 +1,7 @@
-const crypto = require("crypto");
-const {customAlphabet} = require('nanoid');
-const {spawn} = require('child_process');
-const readline = require("readline");
+import crypto from "crypto";
+import {customAlphabet} from 'nanoid';
+import {spawn} from 'child_process';
+import readline from "readline" ;
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout
@@ -36,7 +36,9 @@ rl.question("Admin Email: ", (emailInput) => {
 
 		try {
 			const compose = spawn('docker-compose', ['exec', '-T', 'mongo', 'mongo', 'music-class-chat',
-				'--eval', 'db.Admins.replaceOne({"_id":"' + email + '"}, ' + json + ', {"upsert": true})']);
+				'--eval', 'db.Admins.replaceOne({"_id":"' + email + '"}, ' + json + ', {"upsert": true})'], {
+				//cwd: '..'
+			});
 			compose.stdout.on('data', (data) => {
 				console.log(`${data}`);
 			});

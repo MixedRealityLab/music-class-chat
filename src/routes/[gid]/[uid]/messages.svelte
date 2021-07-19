@@ -1,48 +1,47 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common";
-	import type {GenericResponse, UUser} from "../../../_types";
+	import {base} from '$app/paths'
+	import type {GenericResponse, UUser} from "$lib/types";
+	import type {LoadInput, LoadOutput} from "@sveltejs/kit"
 
-	export const preload: Preload = async function (this, page) {
-		const {gid, uid} = page.params;
-		const res = await this.fetch(`api/user/${gid}/${uid}`);
+	export async function load({fetch, page}: LoadInput): Promise<LoadOutput> {
+		const {gid, uid} = page.params
+		const res = await fetch(`${base}/api/user/${gid}/${uid}`)
 		if (res.status !== 200) {
-			return {error: `Sorry, there was a problem (${res.status})`};
+			return {error: `Sorry, there was a problem (${res.status})`}
 		}
-		const data = await res.json() as GenericResponse;
+		const data = await res.json() as GenericResponse
 		if (data.error) {
-			return {error: data.error};
+			return {error: data.error}
 		} else {
-			return {user: data as UUser};
+			return {props: {user: data as UUser}}
 		}
 	}
 </script>
 <script lang="ts">
-	import type {UUser} from "../../../_types";
-	import AppBar from '../../../components/AppBar.svelte';
-	import UserTabs from '../../../components/UserTabs.svelte';
-	import {stores} from '@sapper/app';
+	import type {UUser} from "$lib/types"
+	import AppBar from '$lib/components/AppBar.svelte'
+	import UserTabs from '$lib/components/UserTabs.svelte'
+	import {page} from '$app/stores'
+	import {onMount} from "svelte";
 
-	const {page} = stores()
 	const {gid, uid} = $page.params
 	export let error: string
 	export let user: UUser
 
-	if (user && user.messages && user.messages.some((message) => !message.read)) {
-		markRead()
-	}
-
-	async function markRead() {
-		const formData = new FormData()
-		formData.append('timestamp', user.messages[user.messages.length - 1].timestamp)
-		await fetch(`api/user/${gid}/${uid}/markRead`, {
-			method: "POST",
-			body: formData
-		})
-	}
+	onMount(async () => {
+		if (user && user.messages && user.messages.some((message) => !message.read)) {
+			const formData = new FormData()
+			formData.append('timestamp', user.messages[user.messages.length - 1].timestamp)
+			await fetch(`${base}/api/user/${gid}/${uid}/markRead`, {
+				method: "POST",
+				body: formData
+			})
+		}
+	})
 </script>
 
 <AppBar>
-	<UserTabs page="messages" url="{gid}/{uid}"
+	<UserTabs page="messages" url="{base}/{gid}/{uid}"
 	          unread="{user.messages && user.messages.some((message) => !message.read)}"/>
 </AppBar>
 <div class="px-2 pt-20">
@@ -70,5 +69,4 @@
 			{/if}
 		</div>
 	{/if}
-
 </div>

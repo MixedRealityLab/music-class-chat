@@ -1,62 +1,55 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common"
-	import type {GenericResponse, UserChat, UUser} from "../../../../../_types"
+	import {assets, base} from '$app/paths'
+	import type {GenericResponse, UserChat, UUser} from "$lib/types";
+	import type {LoadInput, LoadOutput} from "@sveltejs/kit"
 
-	export const preload: Preload = async function (this, page) {
+	// HACK: Disable server-side rendering for now, can't cope with a base path
+	export const ssr = false;
+
+	export async function load({fetch, page}: LoadInput): Promise<LoadOutput> {
 		const {gid, uid, cid} = page.params
-		const userResponse = await this.fetch(`api/user/${gid}/${uid}`)
-		if (userResponse.status !== 200) {
-			return {error: `Sorry, there was a problem (${userResponse.status})`}
+		const userRes = await fetch(`${base}/api/user/${gid}/${uid}`)
+		if(!userRes.ok) {
+			return {status: userRes.status, error: `Sorry, there was a problem (${userRes.status})`}
 		}
-		const userData = await userResponse.json() as GenericResponse
+		const userData = await userRes.json() as GenericResponse
 		if (userData.error) {
 			return {error: userData.error}
 		}
 		let user = userData as UUser
-		const chatResponse = await this.fetch(`api/user/${gid}/${uid}/c/${cid}`)
+		const chatResponse = await fetch(`${base}/api/user/${gid}/${uid}/c/${cid}`)
 		if (chatResponse.status !== 200) {
-			return {error: `Sorry, there was a problem (${chatResponse.status})`}
+			return {status: chatResponse.status, error: `Sorry, there was a problem (${chatResponse.status})`}
 		}
 		const chatData = await chatResponse.json() as GenericResponse
 		if (chatData.error) {
 			return {error: chatData.error}
 		}
 		let chat = chatData as UserChat
-		return {user, chat}
+		return {props: {user, chat}}
 	}
 </script>
 <script lang="ts">
-	import AppBar from '../../../../../components/AppBar.svelte'
-	import Content from '../../../../../components/Content.svelte'
-	import {stores} from '@sapper/app'
+	import AppBar from '$lib/components/AppBar.svelte'
+	import Content from '$lib/components/Content.svelte'
+	import {page} from '$app/stores'
+	import {goto} from '$app/navigation'
 	import {onDestroy, onMount, afterUpdate} from 'svelte'
-	import {getNextStep, isFreeTextInput, isEnabled} from '../../../../../_logic'
-	import type {AddUserMessageRequest, ChatDef, UserChat, UserMessage, UUser} from '../../../../../_types'
+	import {getNextStep, isFreeTextInput, isBack, isEnabled} from '$lib/logic'
+	import type {AddUserMessageRequest, ChatDef, UserChat, UserMessage, UUser} from '$lib/types'
 
 	export let error: string
 	export let user: UUser
 	export let chat: UserChat
 
 	const checkFreq = 250
-	const {page} = stores()
 	const {gid, uid, cid} = $page.params
-	const markup = new RegExp(/^\[([aAmM][bBcCtT]?)]\s*(.*)$/)
-	let backurl = `${gid}/${uid}/`
+	const markup = new RegExp(/^\[([am][bct]?)]\s*(.*)$/gsmi)
+	let backurl = `${base}/${gid}/${uid}/`
 	let reftime = new Date()
 	let waitfor: string [] = null
 	let timer = null
 	let autoscroll = false
-	if (chat) {
-		chat.messages.forEach(message => {
-			if (message.message != null) {
-				let result = markup.exec(message.message)
-				if (result != null) {
-					message.message = result[2]
-					message.style = result[1]
-				}
-			}
-		})
-	}
 
 	afterUpdate(() => {
 		if (autoscroll) {
@@ -70,11 +63,25 @@
 
 	onMount(checkMessages)
 
+	function formatMessage(message) {
+		if (message.message != null) {
+			let result = markup.exec(message.message)
+			if (result != null) {
+				message.message = result[2]
+				message.style = result[1]
+			}
+		}
+	}
+
 	async function checkMessages() {
 		// chat might enable/deliver a message/content/rewards
 		// or return some waitfors (and a timer?)
+		chat.messages.forEach(message => {
+			formatMessage(message)
+		})
+
 		timer = null
-		let userInput: string = ""
+		let userInput = ""
 		if (chat.messages.length > 0) {
 			userInput = chat.messages[chat.messages.length - 1].userinput
 		}
@@ -130,7 +137,9 @@
 			}
 
 			// patch client
+			formatMessage(umsg)
 			chat.messages.push(umsg)
+
 			// rewards, reset
 			if (nextstep.do.rewards) {
 				for (let reward of nextstep.do.rewards) {
@@ -207,7 +216,7 @@
 			nextix,
 			waiting,
 		}
-		const res = await fetch(`api/user/${gid}/${uid}/c/${cid}/addmessage`, {
+		const res = await fetch(`${base}/api/user/${gid}/${uid}/c/${cid}/addmessage`, {
 			method: "POST",
 			body: JSON.stringify(req),
 			headers: {'Content-Type': 'application/json'},
@@ -223,7 +232,6 @@
 			console.log(`updated server`)
 		}
 	}
-
 </script>
 
 <style>
@@ -248,13 +256,14 @@
     }
 
     .message-ac {
-        @apply text-left text-purple-400 text-sm;
+        @apply text-left text-purple-400 text-sm w-full md:w-1/2 pb-4;
+        filter: saturate(0.4);
     }
 </style>
 
 <AppBar backpage="{backurl}">
 	<div class="flex flex-1 justify-center items-center">
-		<img alt="Logo" class="p-4 h-16 mr-16" src="logo.png">
+		<img alt="Logo" class="p-4 h-16 mr-16" src="{assets}/logo.png">
 	</div>
 </AppBar>
 <div class="pt-20 px-2 max-w-3xl mx-auto">
@@ -264,45 +273,53 @@
 	{:else}
 		<div class="p-4 flex flex-col items-center text-white">
 			{#if chat.chatdef.icon}
-				<img src="{chat.chatdef.icon}" alt="Chat Icon"/>
+				<img src="{assets}/{chat.chatdef.icon}" alt="Chat Icon"/>
 			{/if}
 
 			{#each chat.messages as message}
-				{#if message.userinput}
-					<div class="mb-6 mt-2 block py-2 px-6 flex rounded-2xl text-gray-300"
-					     style="filter: saturate(80%); {chat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + chat.chatdef.primaryColour + ',' + chat.chatdef.secondaryColour + ')' : 'background: ' + chat.chatdef.primaryColour}">
-						{message.userinput}
-					</div>
-				{/if}
-
-				{#if message.content}
-					<div class="w-full md:w-1/2">
-						<Content content="{message.content}"/>
-					</div>
-				{/if}
-
-				{#if message.message}
-					<div class="{message.style ? 'message-' + message.style: ''}"
-					     style="{message.style === 'mt' ? 'color: ' +  chat.chatdef.primaryColour: '' }">
-						{message.message}
-					</div>
-				{/if}
-
-				{#if message.rewardicons}
-					{#each message.rewardicons as icon}
-						<div class="w-full md:w-1/2">
-							<img src="{icon}" alt="{icon}">
+				{#if !message.hidden}
+					{#if message.userinput}
+						<div class="mb-6 mt-2 block py-2 px-6 flex rounded-2xl text-gray-200"
+						     style="filter: saturate(40%); {chat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + chat.chatdef.primaryColour + '66,' + chat.chatdef.secondaryColour + '66)' : 'background: ' + chat.chatdef.primaryColour + '66'}">
+							{message.userinput}
 						</div>
-					{/each}
+					{/if}
+
+					{#if message.content}
+						<div class="w-full md:w-1/2">
+							<Content content="{message.content}"/>
+						</div>
+					{/if}
+
+					{#if message.message}
+						<div class="{message.style ? 'message-' + message.style: ''}"
+						     style="{message.style === 'ac' || message.style === 'mt' || message.style === 'at'? 'color: ' +  chat.chatdef.primaryColour: '' }">
+							{message.message}
+						</div>
+					{/if}
+
+					{#if message.rewardicons}
+						{#each message.rewardicons as icon}
+							<div class="w-full md:w-1/2">
+								<img src="{base}/{icon}" alt="{icon}">
+							</div>
+						{/each}
+					{/if}
 				{/if}
 			{/each}
 
 			{#if waitfor && waitfor.length > 0 }
 				<div class="flex flex-col items-center px-4 pb-6">
 					{#each waitfor as userInput}
-						{#if isFreeTextInput(userInput)}
+						{#if isBack(userInput)}
+							<button class="my-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
+							        on:click={() => goto(backurl)}
+							        style="{chat.chatdef.primaryColour != null && chat.chatdef.secondaryColour != null? 'background: linear-gradient(90deg, ' + chat.chatdef.primaryColour + ',' + chat.chatdef.secondaryColour + ')' : 'background: ' + chat.chatdef.primaryColour}">
+								Go Back
+							</button>
+						{:else if isFreeTextInput(userInput)}
 							<input type="text" placeholder="{userInput.substring(1, userInput.length - 1)}"
-							       on:change={handleTextInput}/>
+							       on:change={handleTextInput} style="border-color: {chat.chatdef.primaryColour}"/>
 						{:else}
 							<button class="my-2 block py-2 px-6 flex rounded-2xl cursor-pointer"
 							        on:click={() => handleUserInput(userInput)}

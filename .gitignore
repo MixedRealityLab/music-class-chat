@@ -3,6 +3,8 @@
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/httpRequests
+.svelte-kit
+build
 
 .env
 

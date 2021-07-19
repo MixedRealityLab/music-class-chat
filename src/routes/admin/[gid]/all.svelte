@@ -1,8 +1,8 @@
 <script type="ts">
-	import {stores} from '@sapper/app';
-	import AppBar from "../../../components/AppBar.svelte";
+	import {base} from '$app/paths'
+	import {page} from '$app/stores';
+	import AppBar from "$lib/components/AppBar.svelte";
 
-	const {page} = stores()
 	const {gid} = $page.params
 
 	let statusCode: number = null
@@ -14,7 +14,7 @@
 		statusCode = null
 		const formData = new FormData()
 		formData.append('message', message)
-		const response = await fetch(`api/admin/${gid}/all/sendMessage`, {
+		const response = await fetch(`${base}/api/admin/${gid}/all/sendMessage`, {
 			method: "POST",
 			body: formData
 		})
@@ -32,7 +32,7 @@
 	}
 </script>
 
-<AppBar backpage="{`admin/${gid}`}"><h1>All Users</h1></AppBar>
+<AppBar backpage="{base}/admin/{gid}"><h1>All Users</h1></AppBar>
 <div class="px-2 pt-20 max-w-3xl mx-auto flex flex-col">
 	<textarea bind:value={message} placeholder="Message" class="text-black"></textarea>
 	<button on:click={sendMessage} disabled={isBlank(message) || working} class="self-end px-4 py-2 mt-2"

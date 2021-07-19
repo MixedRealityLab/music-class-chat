@@ -1,9 +1,10 @@
 <script type="ts">
-	import {stores} from '@sapper/app';
-	import AdminTabs from "../../../components/AdminTabs.svelte";
-	import AppBar from "../../../components/AppBar.svelte";
+	import {assets, base} from '$app/paths'
+	import {page} from '$app/stores';
+	import AdminTabs from "$lib/components/AdminTabs.svelte";
+	import AppBar from "$lib/components/AppBar.svelte";
+	import {toBase64} from "../../../lib/upload";
 
-	const {page} = stores()
 	const {gid} = $page.params
 
 	let spreadsheet: FileList
@@ -16,9 +17,8 @@
 			working = true
 			statusText = null
 			const formData = new FormData();
-			formData.append("spreadsheet", spreadsheet[0]);
-			console.log(`document.baseURI = ${document.baseURI}`);
-			const response = await fetch(`api/admin/${gid}/update`, {
+			formData.append('spreadsheet', await toBase64(spreadsheet.item(0)))
+			const response = await fetch(`${base}/api/admin/${gid}/update`, {
 				method: "POST",
 				body: formData
 			});
@@ -27,6 +27,7 @@
 			} else {
 				statusText = response.statusText
 			}
+			fileInput.value = ""
 			working = false
 		}
 	}
@@ -37,14 +38,14 @@
 </script>
 
 <AppBar>
-	<AdminTabs page="update" url="admin/{gid}"/>
+	<AdminTabs page="update" url="{base}/admin/{gid}"/>
 </AppBar>
 
 <div class="px-4 pt-24 flex flex-col items-start max-w-3xl mx-auto">
 	<h1>Update Group</h1>
 	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}
 	        style="background: #1796d8">
-		<img alt="" class="w-6 mr-2" src="icons/upload.svg"/>
+		<img alt="" class="w-6 mr-2" src="{assets}/icons/upload.svg"/>
 		Upload Spreadsheet
 	</button>
 	<input accept=".xlsx" bind:files={spreadsheet} bind:this={fileInput} on:change={submitUpdate} class="hidden"

@@ -1,10 +1,12 @@
+import {base} from '$app/paths'
+import {getDb} from "$lib/db";
+import type {AdminSession, DBAdmin} from "$lib/types"
+import {idAlphabet} from "$lib/types";
+import type {EndpointOutput, Request} from "@sveltejs/kit";
+import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
 import crypto from 'crypto'
-import type {Response} from "express"
 import {customAlphabet} from "nanoid"
 import nodemailer from 'nodemailer'
-import type {ServerRequest} from "../../../_servertypes"
-import type {AdminSession, DBAdmin} from "../../../_types"
-import {idAlphabet} from "../../../_types";
 
 const emailConfigured = 'SMTP_host' in process.env
 const transport = nodemailer.createTransport({
@@ -16,64 +18,59 @@ const transport = nodemailer.createTransport({
 	}
 });
 
-export async function post(req: ServerRequest, res: Response) {
-	try {
-		const {email, password} = req.body
-		if (!email || !password) {
-			res.status(400).json({error: 'Bad Request'})
-			return
-		}
-		const admin = await req.app.locals.db.collection<DBAdmin>('Admins').findOne({_id: email.toLowerCase()})
-		if (admin == null) {
-			res.status(404).json({error: 'Admin Doesn\'t Exist'})
-			return
-		}
-
-		const hashed = crypto
-			.createHmac('sha512', admin.salt)
-			.update(password)
-			.digest('base64')
-		if (hashed !== admin.password) {
-			res.status(401).json({error: 'Wrong Password'})
-			return
-		}
-
-		const expires = addHours(new Date(), 1)
-
-		const session: AdminSession = {
-			id: customAlphabet(idAlphabet, 8)(),
-			email: email,
-			password: customAlphabet(idAlphabet, 12)(),
-			expires: expires.toISOString()
-		}
-
-		// Should
-		const sessionUrl = new URL(req.protocol + '://' + req.get('host') + req.baseUrl + '/admin/session?key=' + session.password).toString()
-		console.log(sessionUrl)
-		await req.app.locals.db.collection('AdminSessions').deleteMany({email: email})
-		await req.app.locals.db.collection('AdminSessions').insertOne(session)
-		if (emailConfigured) {
-			console.log('Sending Email')
-			await transport.sendMail({
-				from: process.env['SMTP_email'],
-				to: email,
-				subject: 'Admin Login',
-				text: 'Session: ' + sessionUrl,
-				html: '<div><a href="' + sessionUrl + '">Complete Login</a></div>'
-			});
-		} else {
-			console.warn('Emails Not Configured')
-		}
-
-		res.json({message: 'Check email'});
-	} catch (error) {
-		console.log('Error (update group)', error);
-		res.writeHead(500).end(JSON.stringify({error: error}));
+export async function post(req: Request): Promise<EndpointOutput> {
+	const body = req.body as ReadOnlyFormData
+	const email = body.get('email')
+	const password = body.get('password')
+	if (!email || !password) {
+		return {status: 400, body: {error: 'Bad Request'}}
 	}
+	const db = await getDb()
+	const admin = await db.collection<DBAdmin>('Admins').findOne({_id: email.toLowerCase()})
+	if (admin == null) {
+		return {status: 404, body: {error: 'Admin Doesn\'t Exist'}}
+	}
+
+	const hashed = crypto
+		.createHmac('sha512', admin.salt)
+		.update(password)
+		.digest('base64')
+	if (hashed !== admin.password) {
+		return {status: 401, body: {error: 'Wrong Password'}}
+	}
+
+	const expires = addHours(new Date(), 1)
+
+	const session: AdminSession = {
+		id: customAlphabet(idAlphabet, 8)(),
+		email: email,
+		password: customAlphabet(idAlphabet, 12)(),
+		expires: expires.toISOString()
+	}
+
+	const sessionUrl = new URL('https://' + req.host + base + '/admin/session?key=' + session.password).toString()
+
+	console.log(sessionUrl)
+	await db.collection('AdminSessions').deleteMany({email: email})
+	await db.collection('AdminSessions').insertOne(session)
+	if (emailConfigured) {
+		console.log('Sending Email')
+		await transport.sendMail({
+			from: process.env['SMTP_email'],
+			to: email,
+			subject: 'Admin Login',
+			text: 'Session: ' + sessionUrl,
+			html: '<div><a href="' + sessionUrl + '">Complete Login</a></div>'
+		});
+	} else {
+		console.warn('Emails Not Configured')
+	}
+
+	return {body: {message: 'Check email'}}
 }
 
 function addHours(date: Date, hours: number) {
-	let result = new Date(date)
+	const result = new Date(date)
 	result.setTime(result.getTime() + hours * 60 * 60 * 1000)
 	return result;
 }

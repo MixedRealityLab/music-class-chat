@@ -1,39 +1,37 @@
-import type {SapperResponse} from '@sapper/server'
-import type {ServerRequest} from '../../../../../_servertypes'
-import type {DBUser, UUser} from "../../../../../_types"
+import {getDb} from "$lib/db";
+import type {DBUser, UUser} from "$lib/types"
+import type {EndpointOutput, Request} from "@sveltejs/kit";
 
-export async function get(req: ServerRequest, res: SapperResponse) {
-	try {
-		const {gid, uid} = req.params
-		if (!gid || !uid) {
-			res.writeHead(400).end(JSON.stringify({error: 'Bad Request'}))
-			return
+export async function get(req: Request): Promise<EndpointOutput> {
+	const {gid, uid} = req.params
+	if (!gid || !uid) {
+		return {
+			status: 400,
+			body: {error: 'Bad Request'}
 		}
-
-		const dbUser = await req.app.locals.db.collection('Users').findOne(
-			{_id: `${gid}/${uid}`}
-		) as DBUser
-		//console.log(`get user ${sid}/${gid}/${uid}`, dbuser)
-		if (!dbUser) {
-			res.writeHead(404).end(JSON.stringify({error: 'Not Found'}))
-			return
-		}
-		const user: UUser = {
-			_id: dbUser._id,
-			usercode: dbUser.usercode,
-			groupid: dbUser.groupid,
-			group: dbUser.group,
-			rewards: dbUser.rewards,
-			chats: dbUser.chats,
-			content: dbUser.content,
-			created: dbUser.created,
-			messages: dbUser.messages,
-		}
-		//console.log('group', ugrop)
-		res.setHeader('Content-Type', 'application/json')
-		res.end(JSON.stringify(user))
-	} catch (error) {
-		console.log('Error (get (user) user)', error)
-		res.writeHead(500).end(JSON.stringify({error: error}))
 	}
+
+	const db = await getDb()
+	const dbUser = await db.collection<DBUser>('Users').findOne(
+		{_id: `${gid}/${uid}`}
+	)
+	//console.log(`get user ${sid}/${gid}/${uid}`, dbuser)
+	if (!dbUser) {
+		return {
+			status: 404,
+			body: {error: 'Not Found'}
+		}
+	}
+	const user: UUser = {
+		_id: dbUser._id,
+		usercode: dbUser.usercode,
+		groupid: dbUser.groupid,
+		group: dbUser.group,
+		rewards: dbUser.rewards,
+		chats: dbUser.chats,
+		content: dbUser.content,
+		created: dbUser.created,
+		messages: dbUser.messages,
+	}
+	return {body: user}
 }

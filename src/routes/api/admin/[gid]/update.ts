@@ -1,39 +1,37 @@
-import type {Response} from 'express'
+import {getDb} from "$lib/db";
+import {isValidAdminSession} from "$lib/session"
+import type {ChatDef, DBGroup, MessageDef} from "$lib/types";
+import {ContentType} from "$lib/types";
+import type {EndpointOutput, Request} from "@sveltejs/kit";
+import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
 import type {Db} from "mongodb"
 import * as xlsx from 'xlsx'
-import type {ServerRequest} from '../../../../_servertypes'
-import type {DBGroup} from "../../../../_types"
-import {ChatDef, ContentType, MessageDef} from "../../../../_types"
-import {isValidAdminSession} from "../_session"
 
-export async function post(req: ServerRequest, res: Response) {
-	try {
-		const {gid} = req.params
-		const file = req.files.spreadsheet
+export async function post(req: Request): Promise<EndpointOutput> {
+	const {gid} = req.params
+	const body = req.body as ReadOnlyFormData
+	const file = body.get('spreadsheet')
+	const buffer = Buffer.from(file, 'base64')
 
-		if (!gid || !file) {
-			res.status(400).json({error: 'Bad Request'})
-			return
-		}
-
-		if (!await isValidAdminSession(req)) {
-			res.status(401).json({error: 'Unauthorized'})
-		}
-
-		const dbgroup = await req.app.locals.db.collection<DBGroup>('Groups').findOne(
-			{_id: gid}
-		)
-		if (!dbgroup) {
-			res.status(404).json({error: 'Not Found'})
-			return
-		}
-		//console.log(`update group ${gid} with file ${file.name} (${file.mimetype}, ${file.size} bytes)`)
-		await readXlsx(gid, file.data, req.app.locals.db)
-		res.json({})
-	} catch (error) {
-		console.log('Error (update group)', error)
-		res.status(500).json({error: error})
+	if (!gid || !file) {
+		return {status: 400, body: {error: 'Bad Request'}}
 	}
+
+	if (!await isValidAdminSession(req)) {
+		return {status: 401, body: {error: 'Unauthorized'}}
+	}
+
+	const db = await getDb()
+	const dbgroup = await db.collection<DBGroup>('Groups').findOne(
+		{_id: gid}
+	)
+	if (!dbgroup) {
+		return {status: 404, body: {error: 'Group Doesn\'t Exists'}}
+	}
+
+	//console.log(`update group ${gid} with file ${file.name} (${file.mimetype}, ${file.size} bytes)`)
+	await readXlsx(gid, buffer, db)
+	return {body: {}}
 }
 
 const SUMMARY = "Summary"
@@ -44,8 +42,8 @@ export async function readXlsx(gid: string, fileData: Buffer, db: Db): Promise<D
 	const wb = xlsx.read(fileData, {})
 	const group = readGroup(wb, gid)
 	//console.log(`group`, group)
-	let requiredRewards = {}
-	let declaredRewards = {}
+	const requiredRewards = {}
+	const declaredRewards = {}
 	const chatdefs = readChatDefs(wb, group, requiredRewards, declaredRewards)
 
 	for (const requiredReward in requiredRewards) {
@@ -76,7 +74,7 @@ export async function readXlsx(gid: string, fileData: Buffer, db: Db): Promise<D
 // excel cell name from column,row (start from 0)
 function cellid(c: number, r: number): string {
 	let p = String(r + 1)
-	let rec = (c) => {
+	const rec = (c) => {
 		p = String.fromCharCode(('A'.charCodeAt(0)) + (c % 26)) + p
 		c = Math.floor(c / 26)
 		if (c != 0)
@@ -104,22 +102,22 @@ interface Sheet {
 }
 
 function readSheet(sheet: xlsx.WorkSheet): Sheet {
-	let headings: string[] = []
+	const headings: string[] = []
 	for (let c = 0; true; c++) {
-		let cell = sheet[cellid(c, 0)]
+		const cell = sheet[cellid(c, 0)]
 		if (!cell)
 			break
-		let heading = String(cell.v).trim()
+		const heading = String(cell.v).trim()
 		headings.push(heading)
 	}
-	let rows: Row[] = []
+	const rows: Row[] = []
 	for (let r = 1; true; r++) {
-		let row: Row = {}
+		const row: Row = {}
 		let empty = true
 		for (let c = 0; c < headings.length; c++) {
-			let cell = sheet[cellid(c, r)]
+			const cell = sheet[cellid(c, r)]
 			if (cell) {
-				let value = String(cell.v).trim()
+				const value = String(cell.v).trim()
 				if (value.length > 0) {
 					row[headings[c]] = value
 					empty = false
@@ -152,7 +150,7 @@ const COMMENT = "comment"
 const REWARDS_HEADINGS = [_ID, ICON, NOICON, COMMENT]
 
 function includesAll(a: string[], inb: string[]): boolean {
-	for (let s of a) {
+	for (const s of a) {
 		if (inb.indexOf(s) < 0)
 			return false
 	}
@@ -174,7 +172,7 @@ function readGroup(wb: xlsx.WorkBook, gid: string): DBGroup {
 		throw `Summary sheet should have 1 row; found ${summary.rows.length}`
 	if (!includesAll(SUMMARY_HEADINGS, summary.headings))
 		throw `Summary sheet is missing heading(s); found ${summary.headings}`
-	let group: DBGroup = {
+	const group: DBGroup = {
 		_id: gid,
 		name: summary.rows[0][NAME],
 		description: summary.rows[0][DESCRIPTION],
@@ -194,7 +192,7 @@ function readGroup(wb: xlsx.WorkBook, gid: string): DBGroup {
 	const rewards = readSheet(rewardssheet)
 	if (!includesAll(REWARDS_HEADINGS, rewards.headings))
 		throw `Rewards sheet is missing heading(s); found ${rewards.headings}`
-	for (let r of rewards.rows) {
+	for (const r of rewards.rows) {
 		group.rewards.push({
 			_id: r[_ID],
 			icon: r[ICON],
@@ -231,14 +229,14 @@ function splitRewards(value: string, location: Location, rewardList): string[] {
 }
 
 function readChatDefs(wb: xlsx.WorkBook, group: DBGroup, requiredRewards, declaredRewards): ChatDef[] {
-	let cds: ChatDef[] = []
+	const cds: ChatDef[] = []
 	const sheet = wb.Sheets[CHATS]
 	if (!sheet)
 		throw 'Could not find Chats sheet'
 	const chats = readSheet(sheet)
 	if (!includesAll(CHATS_HEADINGS, chats.headings))
 		throw `Chats sheet is missing heading(s) found ${chats.headings}, expected ${CHATS_HEADINGS}`
-	for (let r of chats.rows) {
+	for (const r of chats.rows) {
 		const rowNumber = chats.rows.indexOf(r)
 		cds.push({
 			id: r[_ID],
@@ -276,14 +274,14 @@ const CHAT_HEADINGS = [LABEL, IFALL, ANDNOT, AFTER, WAITFOR, ORNEXT,
 	HIDDEN, _REWARDS, RESET, JUMPTO]
 
 function readMessageDefs(wb: xlsx.WorkBook, id: string, group: DBGroup, requiredRewards, declaredRewards): MessageDef[] {
-	let mds: MessageDef[] = []
+	const mds: MessageDef[] = []
 	const sheet = wb.Sheets[id]
 	if (!sheet)
 		throw `Could not find Chat ${id} sheet`
 	const messages = readSheet(sheet)
 	if (!includesAll(CHAT_HEADINGS, messages.headings))
 		throw `Chat ${id} sheet is missing heading(s); found ${messages.headings} vs ${CHAT_HEADINGS}`
-	for (let r of messages.rows) {
+	for (const r of messages.rows) {
 		const rowNumber = messages.rows.indexOf(r)
 		mds.push({
 			label: r[LABEL],

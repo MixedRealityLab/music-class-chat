@@ -1,12 +1,16 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common"
-	import {DialogContent, DialogOverlay} from 'svelte-accessible-dialog'
-	import type {UGroup} from "../../_types"
+	import {assets, base} from '$app/paths'
+	import type {UGroup} from "$lib/types";
+	import type {LoadInput, LoadOutput} from "@sveltejs/kit"
 
-	export const preload: Preload = async function (this) {
-		const res = await this.fetch('api/admin/groups')
+	// HACK: Disable server-side rendering for now, can't cope with a base path
+	export const ssr = false;
+
+	export async function load({fetch}: LoadInput): Promise<LoadOutput> {
+		const res = await fetch(base + '/api/admin/groups')
+		console.log(res.status)
 		if (res.status === 401) {
-			return this.redirect(302, 'admin/login')
+			return {status: 302, redirect: base + '/admin/login'}
 		} else if (res.status !== 200) {
 			return {error: `http response ${res.status}`};
 		}
@@ -14,13 +18,16 @@
 		if (data.error) {
 			return {error: data.error};
 		} else {
-			return {groups: data.groups as Array<UGroup>};
+			return {props: {groups: data as Array<UGroup>}}
 		}
 	}
 </script>
 
 
 <script type="ts">
+	import {DialogContent, DialogOverlay} from 'svelte-accessible-dialog'
+	import {toBase64} from "$lib/upload";
+
 	export let groups: Array<UGroup> = []
 
 	let groupName = ""
@@ -34,19 +41,13 @@
 		const formData = new FormData()
 		formData.append("name", groupName)
 		formData.append("password", password)
-		formData.append("spreadsheet", files[0])
-		console.log(`document.baseURI = ${document.baseURI}`)
-		const response = await fetch('api/admin/createGroup', {
+		formData.append('spreadsheet', await toBase64(files.item(0)))
+		const response = await fetch(base + '/api/admin/createGroup', {
 			method: "POST",
 			body: formData
 		});
 		const data = await response.json()
-		groups = data.groups
-		// if (response.status == 200) {
-		// 	status = "Check your email for a login link"
-		// } else {
-		// 	status = data.message
-		// }
+		groups = data as Array<UGroup>
 	}
 
 	async function addGroup() {
@@ -59,12 +60,12 @@
 </script>
 
 <div class="p-4 flex flex-col items-center max-w-3xl mx-auto">
-	<img alt="Logo" class="px-4 pb-8 max-w-xs self-center" src="logo.png">
+	<img alt="Logo" class="px-4 pb-8 max-w-xs self-center" src="{assets}/logo.png">
 
 	<h1>Groups</h1>
 
 	{#each groups as group}
-		<a href="admin/{group._id}">{group.name}</a>
+		<a href="{base}/admin/{group._id}">{group.name}</a>
 	{/each}
 
 	<DialogOverlay isOpen="{createGroup}" onDismiss={close}>

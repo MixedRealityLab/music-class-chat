@@ -45,7 +45,7 @@ users
 
 ## Data model
 
-NB see typescript [_types.ts](../src/_types.ts)
+NB see typescript [types.ts](../src/_types.ts)
 
 ### Site
 

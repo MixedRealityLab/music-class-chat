@@ -1,34 +1,30 @@
-import type {Response} from 'express'
+import {getDb} from "$lib/db";
+import {isValidAdminSession} from "$lib/session"
+import type {AFile} from "$lib/types";
+import type {EndpointOutput, Request} from "@sveltejs/kit";
+import type {ReadOnlyFormData} from "@sveltejs/kit/types/helper";
 import * as fs from "fs";
-import type {ServerRequest} from '../../../../_servertypes'
-import type {AFile} from "../../../../_types";
-import {isValidAdminSession} from "../_session"
 
-export async function post(req: ServerRequest, res: Response) {
-	try {
-		const {gid} = req.params
-		const {path} = req.body
+export async function post(req: Request): Promise<EndpointOutput> {
+	const {gid} = req.params
+	const body = req.body as ReadOnlyFormData
+	const path = body.get('path')
 
-		if (!gid || !path) {
-			res.status(400).json({error: 'Bad Request'})
-			return;
-		}
+	if (!gid || !path) {
+		return {status: 400, body: {error: 'Bad Request'}}
+	}
 
-		if (!await isValidAdminSession(req)) {
-			res.status(401).json({error: 'Unauthorized'})
-		}
+	if (!await isValidAdminSession(req)) {
+		return {status: 401, body: {error: 'Unauthorized'}}
+	}
 
-		const collection = req.app.locals.db.collection<AFile>('Files')
-		const deleted = await collection.deleteOne({path: path})
-		if (deleted) {
-			fs.rmSync(path)
-		}
+	const db = await getDb()
+	const deleted = await db.collection<AFile>('Files').deleteOne({path: path})
+	if (deleted) {
+		fs.rmSync(path)
+	}
 
-		const files = await collection.find().toArray()
-
-		res.json(files);
-	} catch (error) {
-		console.log('Error (update group)', error);
-		res.status(500).json({error: error})
+	return {
+		body: await db.collection('Files').find().toArray()
 	}
 }

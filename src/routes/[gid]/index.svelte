@@ -1,28 +1,34 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common";
-	import type {GenericResponse, UGroup} from "../../_types";
+	import {base} from '$app/paths'
+	import type {GenericResponse, UGroup} from "$lib/types";
+	import type {LoadInput, LoadOutput} from "@sveltejs/kit"
 
-	export const preload: Preload = async function (this, page) {
+	// HACK: Disable server-side rendering for now, can't cope with a base path
+	export const ssr = false;
+
+	export async function load({page, fetch,}: LoadInput): Promise<LoadOutput> {
 		const {gid} = page.params;
-		const res = await this.fetch(`api/user/${gid}`);
-		const data = await res.json() as GenericResponse;
-		if (data.error) {
-			return {error: data.error};
-		} else if (res.status !== 200) {
-			return {error: `http response ${res.status}`};
-		} else {
-			return {group: data as UGroup};
+
+		const res = await fetch(`${base}/api/user/${gid}`)
+		if (res.ok) {
+			const data = await res.json() as GenericResponse;
+			if (data.error) {
+				return {error: data.error};
+			} else {
+				return {props: {group: data as UGroup}};
+			}
 		}
+		return {status: res.status, error: res.statusText}
 	}
 </script>
 <script lang="ts">
-	import {goto, stores} from '@sapper/app';
-	import type {SignupRequest, SignupResponse} from "../../_types";
+	import {page} from '$app/stores'
+	import {goto} from '$app/navigation';
+	import type {SignupRequest, SignupResponse} from "$lib/types";
 
-	const {page, session} = stores();
 	const {gid} = $page.params;
 
-	export let error: string;
+	let error: string;
 	export let group: UGroup;
 	let password = "";
 	let initials = "";
@@ -38,7 +44,7 @@
 			pin: pin,
 			anon: false,
 		};
-		const response = await fetch(`api/user/${gid}/signup`, {
+		const response = await fetch(`${base}/api/user/${gid}/signup`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -55,10 +61,10 @@
 			console.log('signup response', parsed);
 			if (parsed.usercode) {
 				// OK
-				$session.group = group;
-				$session.userid = parsed.userid;
-				$session.pin = pin;
-				goto(`${gid}/${parsed.usercode}/`);
+				// $session.group = group;
+				// $session.userid = parsed.userid;
+				// $session.pin = pin;
+				goto(`${base}/${gid}/${parsed.usercode}/`);
 			} else {
 				error = parsed.error;
 			}
@@ -68,6 +74,10 @@
 	};
 
 </script>
+
+<svelte:head>
+	<title>{group.name}</title>
+</svelte:head>
 
 <div class="px-2 max-w-3xl mx-auto">
 	{#if error}

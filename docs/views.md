@@ -24,7 +24,7 @@ User path(s):
 - [x] `/sid:/g/gid:/u/uid:/c/cid:/` - specific chat
 - [ ] `/sid:/g/gid:/u/uid:/c/cid:/mix:` - zoom in on specific UserMessage (index)
 
-components:
+lib.components:
 
 - [x] AppBar
 - [x] UserTabs
@@ -44,7 +44,7 @@ components:
 - [ ] `/sid:/admin/sessionid:/upload` - (site) file upload
 - [ ] `/sid:/admin/sessionid:/endsession` - end session (early)
 
-components:
+lib.components:
 
 - AdminBar
 - AdminMenu

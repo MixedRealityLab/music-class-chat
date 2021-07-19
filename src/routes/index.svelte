@@ -1,7 +1,3 @@
-<style>
-
-</style>
-
 <svelte:head>
 	<title>Music class</title>
 </svelte:head>

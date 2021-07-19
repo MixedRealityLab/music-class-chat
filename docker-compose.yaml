@@ -48,7 +48,7 @@ services:
             - 'mongo'
         ports:
             - "3000:3000"
-            - "10000:10000"
+            - "24678:24678"
         volumes:
             - uploads:/app/uploads
             - src:/app/src

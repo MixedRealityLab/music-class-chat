@@ -1,7 +1,9 @@
 <script type="ts">
+	import {assets, base} from '$app/paths'
+
 	let email = ""
 	let password = ""
-	let status: String = null
+	let status: string = null
 	let working = false
 
 	async function handleSubmit() {
@@ -10,7 +12,7 @@
 		formData.append("email", email)
 		formData.append("password", password)
 		console.log(`document.baseURI = ${document.baseURI}`)
-		const response = await fetch('api/admin/login', {
+		const response = await fetch(base + '/api/admin/login', {
 			method: "POST",
 			body: formData
 		});
@@ -25,7 +27,7 @@
 </script>
 
 <form class="p-4 flex flex-col items-center" on:submit|preventDefault={handleSubmit}>
-	<img alt="Logo" class="px-4 pb-8 max-w-sm" src="logo.png">
+	<img alt="Logo" class="px-4 pb-8 max-w-sm" src="{assets}/logo.png">
 	<label class="block">
 		<span>Admin Email</span>
 		<input bind:value="{email}" class="mt-1 block w-full" disabled={working} name="email"

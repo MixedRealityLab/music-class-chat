@@ -1,5 +1,6 @@
 <script>
-	import {ContentType} from '../_types';
+	import {assets} from "$app/paths";
+	import {ContentType} from '../types';
 	import {DialogContent, DialogOverlay} from 'svelte-accessible-dialog';
 
 	export let content;
@@ -16,11 +17,11 @@
 </script>
 
 {#if content.type === ContentType.image}
-	<img src="{content.url}" alt="{content.title}" on:click={open}>
+	<img src="{assets}/{content.url}" alt="{content.title}" on:click={open}>
 	<DialogOverlay {isOpen} onDismiss={close}>
 		<DialogContent aria-label="Definition"
 		               style="background: #222; filter: drop-shadow(0 4px 8px #0008); width: 90vw; padding: 0; margin: 5rem auto auto;">
-			<img src="{content.url}" style="width: 100%" alt="{content.title}" on:click={close}>
+			<img src="{assets}/{content.url}" style="width: 100%" alt="{content.title}" on:click={close}>
 		</DialogContent>
 	</DialogOverlay>
 {:else if content.type === ContentType.youtube}

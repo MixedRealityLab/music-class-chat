@@ -1,16 +1,19 @@
 <script context="module" lang="ts">
-	import type {Preload} from "@sapper/common"
+	import {assets, base} from '$app/paths'
+	import type {LoadInput, LoadOutput} from "@sveltejs/kit"
 
-	export const preload: Preload = async function (this, page) {
+	export async function load({page, fetch}: LoadInput): Promise<LoadOutput> {
 		const {gid} = page.params
 
-		const res = await this.fetch(`api/admin/${gid}`)
+		const res = await fetch(`${base}/api/admin/${gid}`)
+		console.log(res)
 		if (res.status === 401) {
-			return this.redirect(302, `admin/login`)
+			return {status: 302, redirect: base + '/admin/login'}
 		} else if (res.status !== 200) {
 			return {error: `http response ${res.status}`}
 		}
 		const data = await res.json()
+		console.log(data)
 		if (data.error) {
 			return {error: data.error}
 		} else {
@@ -21,12 +24,12 @@
 
 
 <script type="ts">
-	import {stores} from '@sapper/app'
-	import AdminTabs from "../../../components/AdminTabs.svelte"
-	import AppBar from "../../../components/AppBar.svelte"
-	import type {AFile} from "../../../_types"
+	import {page} from '$app/stores'
+	import AdminTabs from "$lib/components/AdminTabs.svelte"
+	import AppBar from "$lib/components/AppBar.svelte"
+	import type {AFile} from "$lib/types"
+	import {toBase64} from "../../../lib/upload";
 
-	const {page} = stores()
 	const {gid} = $page.params
 
 	export let files: AFile[]
@@ -46,11 +49,13 @@
 		working = true
 		statusText = null
 		const formData = new FormData()
-		console.log(uploads)
 		for (let i = 0; i < uploads.length; i++) {
-			formData.append("files", uploads[i])
+			const file = uploads[i]
+			formData.append("fileName", file.name)
+			formData.append("fileType", file.type)
+			formData.append("fileData", await toBase64(file))
 		}
-		const response = await fetch(`api/admin/${gid}/upload`, {
+		const response = await fetch(`${base}/api/admin/${gid}/upload`, {
 			method: "POST",
 			body: formData
 		})
@@ -67,7 +72,7 @@
 		statusText = null
 		const formData = new FormData()
 		formData.append('path', path)
-		const response = await fetch(`api/admin/${gid}/delete`, {
+		const response = await fetch(`${base}/api/admin/${gid}/delete`, {
 			method: "POST",
 			body: formData
 		})
@@ -85,23 +90,25 @@
 </script>
 
 <AppBar>
-	<AdminTabs page="files" url="admin/{gid}"/>
+	<AdminTabs page="files" url="{base}/admin/{gid}"/>
 </AppBar>
 
 <div class="px-4 pt-24 flex flex-col items-start max-w-3xl mx-auto">
 	<h1>Files</h1>
-	{#each files as file}
-		<div class="flex items-center">
-			<div><a href="{file.path}">{file.path}</a></div>
-			<button class="ml-4 my-2" disabled="{working}" on:click={() => deleteFile(file.path)}>
-				<img src="icons/trash.svg" class="p-2 w-8" alt="Delete File"/>
-			</button>
-		</div>
-	{/each}
+	{#if files}
+		{#each files as file}
+			<div class="flex items-center">
+				<div><a href="{assets}/{file.path}">{file.path}</a></div>
+				<button class="ml-4 my-2" disabled="{working}" on:click={() => deleteFile(file.path)}>
+					<img src="{assets}/icons/trash.svg" class="p-2 w-8" alt="Delete File"/>
+				</button>
+			</div>
+		{/each}
+	{/if}
 
 	<button class="py-2 px-4 mt-8 flex items-center" disabled="{working}" on:click={openSelect}
 	        style="background: #1796d8">
-		<img alt="" class="w-6 mr-2" src="icons/add.svg"/>
+		<img alt="" class="w-6 mr-2" src="{assets}/icons/add.svg"/>
 		Add Files
 	</button>
 	<input bind:files={uploads} bind:this={fileInput} class="hidden" multiple="multiple" on:change={change}
