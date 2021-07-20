@@ -37,7 +37,7 @@ export async function post(req: Request): Promise<EndpointOutput> {
 		(dbGroup.requirepin && !signup.pin)) {
 		return {status: 400, body: {error: 'Bad Request (initials, email or pin)'}}
 	}
-	const user = await createNewUser(dbGroup, signup, db)
+	const user = await createNewUser(dbGroup, signup, db, req.headers['user-agent'])
 	console.log(`new user ${user._id}`)
 	return {
 		body: {
@@ -46,7 +46,7 @@ export async function post(req: Request): Promise<EndpointOutput> {
 	}
 }
 
-async function createNewUser(group: DBGroup, signup: SignupRequest, db: Db): Promise<DBUser> {
+async function createNewUser(group: DBGroup, signup: SignupRequest, db: Db, userAgent: string): Promise<DBUser> {
 
 	const uid: string = customAlphabet(idAlphabet, 10)()
 	//console.log(`new user id: ${_id}`)
@@ -107,7 +107,10 @@ async function createNewUser(group: DBGroup, signup: SignupRequest, db: Db): Pro
 	// add
 	await db.collection<DBUser>('Users').insertOne(user)
 	await db.collection<LogItem>('EventLog').insertOne({
-		timestamp: new Date().getTime(), type: LogType.SignUp, uid: user._id
+		timestamp: new Date().getTime(),
+		type: LogType.SignUp,
+		uid: user._id,
+		userAgent: userAgent
 	})
 	return user
 }

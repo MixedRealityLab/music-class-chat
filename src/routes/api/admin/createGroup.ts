@@ -43,7 +43,8 @@ export async function post(req: Request): Promise<EndpointOutput> {
 		timestamp: new Date().getTime(),
 		type: LogType.Admin,
 		uid: await getAdmin(req),
-		content: 'Created Group ' + gid
+		content: 'Created Group ' + gid,
+		userAgent: req.headers['user-agent']
 	})
 
 	return {body: await db.collection('Groups').find().toArray()}

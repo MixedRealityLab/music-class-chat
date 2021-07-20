@@ -257,9 +257,13 @@
 
     .message-ac {
         @apply text-left text-purple-400 text-sm w-full md:w-1/2 pb-4;
-        filter: saturate(0.4);
+        filter: saturate(0.4) brightness(1.2);
     }
 </style>
+
+<svelte:head>
+	<title></title>
+</svelte:head>
 
 <AppBar backpage="{backurl}">
 	<div class="flex flex-1 justify-center items-center">

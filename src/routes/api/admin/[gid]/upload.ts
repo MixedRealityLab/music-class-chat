@@ -43,7 +43,8 @@ export async function post(req: Request): Promise<EndpointOutput> {
 		timestamp: new Date().getTime(),
 		type: LogType.Admin,
 		uid: await getAdmin(req),
-		content: 'Uploaded files: ' + JSON.stringify(fileName)
+		content: 'Uploaded files: ' + JSON.stringify(fileName),
+		userAgent: req.headers['user-agent']
 	})
 
 	return {body: await db.collection('Files').find().toArray()}

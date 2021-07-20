@@ -29,7 +29,8 @@ export async function post(req: Request): Promise<EndpointOutput> {
 		timestamp: new Date().getTime(),
 		type: LogType.Admin,
 		uid: await getAdmin(req),
-		content: 'Deleted file ' + path
+		content: 'Deleted file ' + path,
+		userAgent: req.headers['user-agent']
 	})
 
 	return {

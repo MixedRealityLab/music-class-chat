@@ -37,7 +37,8 @@ export async function post(req: Request): Promise<EndpointOutput> {
 			timestamp: new Date().getTime(),
 			type: LogType.Admin,
 			uid: await getAdmin(req),
-			content: 'Sent message to all'
+			content: 'Sent message to all',
+			userAgent: req.headers['user-agent']
 		})
 		return {body: "success"}
 	} else {
@@ -61,7 +62,8 @@ export async function post(req: Request): Promise<EndpointOutput> {
 			timestamp: new Date().getTime(),
 			type: LogType.Admin,
 			uid: await getAdmin(req),
-			content: 'Sent message to ' + uid
+			content: 'Sent message to ' + uid,
+			userAgent: req.headers['user-agent']
 		})
 		await db.collection<DBUser>('Users').replaceOne(filter, user)
 

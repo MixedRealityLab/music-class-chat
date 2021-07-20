@@ -35,7 +35,9 @@ export async function post(req: Request): Promise<EndpointOutput> {
 		timestamp: new Date().getTime(),
 		type: LogType.Admin,
 		uid: await getAdmin(req),
-		content: 'Updated Spreadsheet'
+		content: 'Updated Spreadsheet',
+		userAgent: req.headers['user-agent']
+
 	})
 
 	return {body: {}}

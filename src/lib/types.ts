@@ -222,7 +222,8 @@ export interface LogItem {
 	type: LogType,
 	uid: string,
 	timestamp: number,
-	content?: string
+	content?: string,
+	userAgent?: string
 }
 
 //EOF

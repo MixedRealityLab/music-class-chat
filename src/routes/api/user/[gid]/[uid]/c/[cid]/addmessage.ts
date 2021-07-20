@@ -4,7 +4,7 @@ import type {AddUserMessageRequest, DBUser, LogItem, UserChat} from "$lib/types"
 import {LogType} from "$lib/types";
 import type {EndpointOutput, Request} from "@sveltejs/kit";
 
-export async function post({params, body}: Request): Promise<EndpointOutput> {
+export async function post({params, body, headers}: Request): Promise<EndpointOutput> {
 	const {gid, uid, cid} = params
 	if (!gid || !uid || !cid) {
 		return {status: 400, body: {error: 'Bad Request'}}
@@ -61,14 +61,18 @@ export async function post({params, body}: Request): Promise<EndpointOutput> {
 		{$set: {rewards: rewards, chats: ucs, content: content}})
 	if (addRequest.rewards.length == 0) {
 		await db.collection<LogItem>('EventLog').insertOne({
-			timestamp: new Date().getTime(), type: LogType.Chat, uid: dbUser._id
+			timestamp: new Date().getTime(),
+			type: LogType.Chat,
+			uid: dbUser._id,
+			userAgent: headers['user-agent']
 		})
 	} else {
 		await db.collection<LogItem>('EventLog').insertOne({
 			timestamp: new Date().getTime(),
 			type: LogType.Reward,
 			uid: dbUser._id,
-			content: addRequest.rewards.join(', ')
+			content: addRequest.rewards.join(', '),
+			userAgent: headers['user-agent']
 		})
 	}
 
