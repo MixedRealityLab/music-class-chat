@@ -266,8 +266,8 @@
 </svelte:head>
 
 <AppBar backpage="{backurl}">
-	<div class="flex flex-1 justify-center items-center">
-		<img alt="Logo" class="p-4 h-16 mr-16" src="{assets}/logo.png">
+	<div class="flex-1 mr-16">
+		<img alt="Logo" class="p-4 h-16 mx-auto" src="{assets}/logo.png">
 	</div>
 </AppBar>
 <div class="pt-20 px-2 max-w-3xl mx-auto">
