@@ -40,6 +40,10 @@
 	})
 </script>
 
+<svelte:head>
+	<title>{user.group.name} Messages</title>
+</svelte:head>
+
 <AppBar>
 	<UserTabs page="messages" url="{base}/{gid}/{uid}"
 	          unread="{user.messages && user.messages.some((message) => !message.read)}"/>

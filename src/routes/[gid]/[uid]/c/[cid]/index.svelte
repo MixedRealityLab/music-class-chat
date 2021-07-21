@@ -262,7 +262,7 @@
 </style>
 
 <svelte:head>
-	<title></title>
+	<title>{user.group.name} {chat.chatdef.name}</title>
 </svelte:head>
 
 <AppBar backpage="{backurl}">

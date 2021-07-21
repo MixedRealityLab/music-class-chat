@@ -30,6 +30,10 @@
 	export let user: UUser
 </script>
 
+<svelte:head>
+	<title>{user.group.name}</title>
+</svelte:head>
+
 <AppBar>
 	<UserTabs page="chats" url="{base}/{gid}/{uid}"
 	          unread="{user.messages && user.messages.some((message) => !message.read)}"/>
