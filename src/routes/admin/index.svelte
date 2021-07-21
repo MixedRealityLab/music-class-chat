@@ -65,7 +65,7 @@
 	<h1>Groups</h1>
 
 	{#each groups as group}
-		<a href="{base}/admin/{group._id}">{group.name}</a>
+		<a href="{base}/admin/{group._id}">{group._id}: {group.name}</a>
 	{/each}
 
 	<DialogOverlay isOpen="{createGroup}" onDismiss={close}>
